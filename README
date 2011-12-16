@@ -1,0 +1,23 @@
+* Réaliser le segment de mémoire partagé pour la grille
+* 2 Serveurs différents (sockets différentes)
+* Client et Contrôle caméra en multithreads
+* Variable globale pour le serveur de contrôle qui mémorise le nombre de mouvements
+* Thread 1 :
+			--> Initialise la variable globale
+			--> Accepte les connexions en boucle, gère la file d'attente et le temps
+			--> Met en place un mutex sur la file d'attente
+			--> Lance le second thread avec comme argument la socket qui prend la main
+			--> Tue le second thread à la fin du temps imparti
+* Thread 2 :
+			--> Annonce l'établissement de la connexion à l'utilisateur
+			--> Lis les ordres et effectue les instructions
+			--> Incrémente à chaque mouvement la variable globale et réinitialise la grille une fois la
+			valeur limite atteinte
+			--> Jette gentillement le client
+* Client Thread 1
+			--> Gère l'affichage et la connexion à la vue
+			--> Transfert contrôle du clavier et de la fenetre de saisie au thread 2
+* Client Thread 2
+			--> Connexion au serveur de controle de la caméra
+			--> Mets à jour la fenetre de saisie clavier
+			--> Gère la caméra

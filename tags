@@ -1,0 +1,61 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ADR_ERR	dm.h	24;"	d
+ANONY_SOCK	pers_sock.h	34;"	d
+CLEAN	client.c	18;"	d	file:
+CLEAN	serveur.c	20;"	d	file:
+DEF_ADR	pers_sock.h	38;"	d
+DEF_PORT	pers_sock.h	37;"	d
+DISP_HELP	dm.h	22;"	d
+DM_H	dm.h	20;"	d
+FREQ_RAF	serveur.c	27;"	d	file:
+GRID_H	client.c	17;"	d	file:
+GRID_W	client.c	16;"	d	file:
+HOST_NAME_ERR	dm.h	25;"	d
+H_GRILLE	serveur.c	26;"	d	file:
+NAMED_SOCK	pers_sock.h	35;"	d
+PERS_SOCK_H	pers_sock.h	20;"	d
+PORT_ERR	dm.h	23;"	d
+W_GRILLE	serveur.c	25;"	d	file:
+arret	client.c	/^int arret = 0;$/;"	v
+arret	serveur.c	/^int arret = 0;$/;"	v
+backupClients	fonctionsServeur.c	/^int backupClients(int* clients, int** clientsTrans, int nbClients)$/;"	f
+client	serveur.c	/^struct sockaddr_in* client;$/;"	v	typeref:struct:sockaddr_in
+create_socket_by_hybrid	pers_sock.c	/^int create_socket_by_hybrid (const char *hostname, const int num_port, $/;"	f
+create_socket_by_name	pers_sock.c	/^int create_socket_by_name (const char *hostname, const char *servname, $/;"	f
+create_socket_by_numbers	pers_sock.c	/^int create_socket_by_numbers (const char *ip_adr, const int num_port,$/;"	f
+endloop	client.c	/^void endloop () $/;"	f
+fill_sockaddr_in	pers_sock.c	/^void fill_sockaddr_in(p_sockin_t addr, int domain, int port, const char *adr_ip) {$/;"	f
+gestionClient	serveur.c	/^void* gestionClient(void* arg)$/;"	f
+gstArgs	fonctionsClient.c	/^void gstArgs(int argc, char* argv[], struct hostent *hote, struct sockaddr_in *server, struct sockaddr_in *client)$/;"	f
+gstArgs	fonctionsServeur.c	/^void gstArgs(int argc, char* argv[], struct hostent *hote, struct sockaddr_in *server)$/;"	f
+host_t	pers_sock.h	/^typedef struct hostent host_t;$/;"	t	typeref:struct:hostent
+itoa	fonctionsClient.c	/^char* itoa(long n)$/;"	f
+itoa	fonctionsServeur.c	/^char* itoa(long n)$/;"	f
+main	client.c	/^int main(int argc, char* argv[])$/;"	f
+main	controle_cam.c	/^int main (int argc, char **argv) {$/;"	f
+main	fakeclient.c	/^int main (int argc, char **argv) {$/;"	f
+main	serveur.c	/^int main(int argc, char* argv[])$/;"	f
+mutexThreads	serveur.c	/^pthread_mutex_t mutexThreads;$/;"	v
+nbThreads	serveur.c	/^int sd, nbThreads = 0;$/;"	v
+p_host_t	pers_sock.h	/^typedef host_t* p_host_t;$/;"	t
+p_proto_t	pers_sock.h	/^typedef proto_t* p_proto_t;$/;"	t
+p_serv_t	pers_sock.h	/^typedef serv_t* p_serv_t;$/;"	t
+p_sock_t	pers_sock.h	/^typedef sock_t* p_sock_t;$/;"	t
+p_sockin_t	pers_sock.h	/^typedef sockin_t* p_sockin_t;$/;"	t
+print_help	dm.c	/^void print_help() {$/;"	f
+proto_t	pers_sock.h	/^typedef struct protoent proto_t;$/;"	t	typeref:struct:protoent
+read_options	dm.c	/^int read_options (int argc, char **argv, p_sockin_t server_adress) {$/;"	f
+recupClients	fonctionsServeur.c	/^int recupClients(int** clients, int** clientsTrans, int nbClients, int sd_client)$/;"	f
+sd	serveur.c	/^int sd, nbThreads = 0;$/;"	v
+serv_t	pers_sock.h	/^typedef struct servent serv_t;$/;"	t	typeref:struct:servent
+sigintHandler	serveur.c	/^void sigintHandler(int sig)$/;"	f
+sigpipeHandler	serveur.c	/^void sigpipeHandler(int sig)$/;"	f
+sock_t	pers_sock.h	/^typedef struct sockaddr sock_t;$/;"	t	typeref:struct:sockaddr
+socketClients	serveur.c	/^int *socketClients = NULL;$/;"	v
+sockin_t	pers_sock.h	/^typedef struct sockaddr_in sockin_t;$/;"	t	typeref:struct:sockaddr_in
+thread_id	serveur.c	/^pthread_t *thread_id = NULL;$/;"	v
