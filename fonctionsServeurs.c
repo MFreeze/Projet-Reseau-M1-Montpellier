@@ -1,10 +1,13 @@
 
-#include "fonctionsServeur.h"
+#include "fonctionsServeurs.h"
 
-void gstArgs(int argc, char* argv[], struct hostent *hote, struct sockaddr_in *server)
+int gstArgs(int argc, char* argv[], struct sockaddr_in *server, int portDefault)
 {
+	struct hostent *hote = NULL;
+	bzero(server,sizeof(*server));
 	struct in_addr adServer;
-	int i = 1;
+	bzero(&adServer,sizeof(adServer));
+	int i = 1, sd = -1;
 	
 	if(argc == 2 && strcmp(argv[1], "--help")==0)
 	{
@@ -12,7 +15,7 @@ void gstArgs(int argc, char* argv[], struct hostent *hote, struct sockaddr_in *s
 		printf("-n nom de l'hote /* par default 'localhost'*/\n");
 		printf("-i adresse ip de l'hote /* par default '127.0.0.1'*/\n");
 		printf("-p numero de port a utiliser /* par default '13321'*/\n\n");
-		exit(EXIT_SUCCESS);
+		return 0;
 	}
 	if(argc < 2)
 	{
@@ -24,13 +27,13 @@ void gstArgs(int argc, char* argv[], struct hostent *hote, struct sockaddr_in *s
 	if(hote == NULL)
 	{
 		herror("Hote inexistant ");
-		exit(EXIT_FAILURE);
+		return -1;
 	}
 	bcopy(hote->h_addr_list[0], &adServer, sizeof(adServer));
 	
 	server->sin_family = AF_INET;
 	server->sin_addr.s_addr = adServer.s_addr;
-	server->sin_port = htons(13321);
+	server->sin_port = htons(portDefault);
 	
 	while(i < argc)
 	{
@@ -40,7 +43,7 @@ void gstArgs(int argc, char* argv[], struct hostent *hote, struct sockaddr_in *s
 			if(hote == NULL)
 			{
 				herror("Hote inexistant ");
-				exit(EXIT_FAILURE);
+				return -1;
 			}
 			bcopy(hote->h_addr_list[0], &adServer, sizeof(adServer));
 			server->sin_addr.s_addr = adServer.s_addr;
@@ -56,7 +59,8 @@ void gstArgs(int argc, char* argv[], struct hostent *hote, struct sockaddr_in *s
 			if(atoi(argv[i+1]) < 2000 || atoi(argv[i+1]) > 65535)
 			{
 				printf("Numero de port incorrect.\n");
-				exit(EXIT_FAILURE);
+				
+				return -1;
 			}
 			server->sin_port = htons(atoi(argv[i+1]));
 			i+=2;
@@ -64,9 +68,29 @@ void gstArgs(int argc, char* argv[], struct hostent *hote, struct sockaddr_in *s
 		else
 		{
 			printf("Veuillez entrer des arguments coherents.\n");
-			exit(EXIT_FAILURE);
+			
+			return -1;
 		}
 	}
+	
+	sd = socket(AF_INET, SOCK_STREAM, 0);
+	if (sd<0)
+	{
+		perror("Erreur d'ouverture de socket ");
+		return -1;
+	}
+	
+	if(bind(sd, (struct sockaddr*)server, (socklen_t)sizeof(*server)) == -1)
+	{
+		perror("Erreur de lien a la boite reseau ");
+		close(sd);
+		
+		return -1;
+	}
+	
+	printf("Adresse IP du serveur : %s\nPort du serveur : %d\n\n", (char*)inet_ntoa(server->sin_addr), htons(server->sin_port));
+	
+	return sd;
 }
 
 char* itoa(long n)
@@ -105,7 +129,7 @@ char* gridCreation(char* nomExec, int* grilleShm, int wgrid, int hgrid)
 		exit(EXIT_FAILURE);
 	}
 	
-	mode = IPC_CREAT|IPC_EXCL|0666;
+	mode = IPC_CREAT|0666;
 	
 	if((*grilleShm = shmget(key, (wgrid+1)*hgrid, mode)) == -1)
 	{
@@ -136,8 +160,56 @@ char* gridCreation(char* nomExec, int* grilleShm, int wgrid, int hgrid)
 	return grille;
 }
 
-/* Secondary threads launching function */
-void* gestionClient(void* arg)
+/* Secondary sending threads launching function */
+void* thread_broadcast(void* arg)
+{
+	pthread_detach(pthread_self());
+	
+	int i, numThread = -1, tourne = 1;
+	int sd_client = *((int*)arg);
+	
+	printf("Client connecte sur le thread %lu avec la socket %d\n", (unsigned long)(pthread_self()), sd_client);
+	
+	while(tourne)
+	{
+		if(send(sd_client, grille, (W_GRILLE+1)*H_GRILLE, 0) < 1)
+		{
+			//perror("Erreur d'envoi de la grille ");
+			tourne = 0;
+		}
+		else
+		{
+			sleep(FREQ_RAF);
+		}
+	}
+	
+	pthread_mutex_lock(&mutexThreads);
+	printf("Client deconnecte sur le thread %lu avec la socket %d\n", (unsigned long)(pthread_self()), sd_client);
+	
+	close(sd_client);
+	for(i = 0 ; i < nbThreads-1 ; i++)
+	{
+		if(thread_id[i] == pthread_self())
+		{
+			numThread = i;
+		}
+		if(numThread != -1)
+		{
+			socketClients[i] = socketClients[i+1];
+			thread_id[i] = thread_id[i+1];
+		}
+	}
+	nbThreads--;
+	thread_id = realloc(thread_id, nbThreads*sizeof(pthread_t));
+	socketClients = realloc(socketClients, nbThreads*sizeof(int));
+	
+	pthread_mutex_unlock(&mutexThreads);
+	
+	return NULL;
+}
+
+/* Secondary receving threads launching function */
+void* thread_deplacement(void* arg)
 {
 	pthread_detach(pthread_self());
 	
@@ -212,6 +284,21 @@ void attachSignals()
 	}
 }
 
-
+int setNonblocking(int fd)
+{
+    int flags;
+	
+    /* If they have O_NONBLOCK, use the Posix way to do it */
+#if defined(O_NONBLOCK)
+    /* Fixme: O_NONBLOCK is defined but broken on SunOS 4.1.x and AIX 3.2.5. */
+    if (-1 == (flags = fcntl(fd, F_GETFL, 0)))
+        flags = 0;
+    return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+#else
+    /* Otherwise, use the old way of doing it */
+    flags = 1;
+    return ioctl(fd, FIONBIO, &flags);
+#endif
+}   
 
 

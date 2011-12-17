@@ -1,6 +1,6 @@
 
 
-#include "fonctionsServeur.h"
+#include "fonctionsServeurs.h"
 
 int *socketClients = NULL;
 int nbThreads = 0;
@@ -13,12 +13,11 @@ int arret = 0;
 
 
 
-/* Main server thread */
+/* Thread principal du serveur d'envoi */
 int main(int argc, char* argv[])
 {
-	struct hostent *hote = NULL;
 	struct sockaddr_in server;
-	int addr_in_size;
+	int addr_in_size = sizeof(struct sockaddr_in);
 	int i = 1;
 	int sd_client;
 	pthread_t *thread_id_trans = NULL;
@@ -26,56 +25,48 @@ int main(int argc, char* argv[])
 	struct sockaddr_in* client;
 	int sd;
 	
-	/* Gestion des signaux */
-	attachSignals();
-	
-	grille = gridCreation(argv[0], &grilleShm, W_GRILLE, H_GRILLE);
-	
-	/* init mutex */
-	pthread_mutex_init(&mutexThreads, NULL);
-	
-	/* init reseau */
-	bzero(&server,sizeof(server));
-	
-	gstArgs(argc, argv, hote, &server);
-	
-	addr_in_size = sizeof(struct sockaddr_in);
 	client = (struct sockaddr_in *)malloc(addr_in_size);
 	bzero(client,sizeof(client));
 	
+	/* Gestion des signaux */
+	attachSignals();
 	
-	sd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sd<0)
+	/* Creation du segment de memoire partagee de la grille */
+	grille = gridCreation(argv[0], &grilleShm, W_GRILLE, H_GRILLE);
+	
+	/* Initialisation du mutex gerant l'acces aux tableaux de threads et de sockets client */
+	pthread_mutex_init(&mutexThreads, NULL);
+	
+	/* init reseau */
+	if((sd = gstArgs(argc, argv, &server, 13321)) < 1)
 	{
-		perror("Erreur d'ouverture de socket ");
-		free(hote);
 		free(client);
-		exit(EXIT_FAILURE);
+		if(shmdt(grille) == -1)
+		{
+			perror("Shared memory segment's detachment impossible");
+		}
+		if(shmctl(grilleShm, IPC_RMID, NULL) == -1)
+		{
+			perror("Shared memory segment's destruction impossible");
+		}
+		
+		if(sd == 0)
+			exit(EXIT_SUCCESS);
+		else
+			exit(EXIT_FAILURE);
 	}
-	printf("Adresse IP du serveur : %s\nPort du serveur : %d\n\n", (char*)inet_ntoa(server.sin_addr), htons(server.sin_port));
+	printf("Serveur initialise sur le thread %lu\n", (unsigned long)pthread_self());
 	
-	if(bind(sd, (struct sockaddr*)&server, (socklen_t)sizeof(server)) == -1)
-	{
-		perror("Erreur de lien a la boite reseau ");
-		free(hote);
-		free(client);
-		close(sd);
-		exit(EXIT_FAILURE);
-	}
-	
+	/* Ecoute des demandes de connexion des clients */
 	if(listen(sd, 10) == -1)
 	{
 		perror("listen");
-		free(hote);
 		free(client);
 		close(sd);
 		exit(EXIT_FAILURE);
 	}
 	
-	
-	printf("Serveur initialise sur le thread %lu\n", (unsigned long)pthread_self());
-	
-	
+	/* boucle d'execution : acceptation des clients et creation des threads associes */
 	while(!arret)
 	{
 		// accepter la connexion entrante
@@ -114,8 +105,8 @@ int main(int argc, char* argv[])
 			thread_id = thread_id_trans;
 			thread_id_trans = NULL;
 		}
-		
-		if(pthread_create(&(thread_id[nbThreads]), NULL, gestionClient, &sd_client) != 0)
+		/* lancement de l'execution du thread qui s'occupera du client nouvellement connecte */
+		if(pthread_create(&(thread_id[nbThreads]), NULL, thread_broadcast, &sd_client) != 0)
 		{
 			fprintf(stderr, "Thread %lu creation failure.\n", (unsigned long)(thread_id));
 			arret = 1;
@@ -125,6 +116,7 @@ int main(int argc, char* argv[])
 	}
 	
 	
+	/* clean */
 	pthread_mutex_lock(&mutexThreads);
 	for(i = 0 ; i < nbThreads ; i++)
 	{
@@ -137,7 +129,7 @@ int main(int argc, char* argv[])
 	}
 	pthread_mutex_unlock(&mutexThreads);
 	
-	free(hote);
+	
 	free(client);
 	free(thread_id);
 	free(socketClients);

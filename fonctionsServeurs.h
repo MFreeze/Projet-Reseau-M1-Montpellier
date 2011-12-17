@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/ioctl.h>
 #include <sys/ipc.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -34,11 +35,13 @@ extern char* grille;
 extern int arret;
 
 
-void gstArgs(int argc, char* argv[], struct hostent *hote, struct sockaddr_in *server);
+int gstArgs(int argc, char* argv[], struct sockaddr_in *server, int portDefault);
 char* itoa(long n);
 char* gridCreation(char* nomExec, int* grilleShm, int wgrid, int hgrid);
-void* gestionClient(void* arg);
+void* thread_broadcast(void* arg);
+void* thread_deplacement(void* arg);
 void attachSignals();
+int setNonblocking(int fd);
 
 #endif DEF_FSERV
 
