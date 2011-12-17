@@ -38,15 +38,15 @@ clean:
 	rm *~
 
 controle_cam: $(ALL_OBJ_SERV)
-	$(LINK) $(CFLAGS) $(OFLAG) $@ $(ALL_OBJ_SERV)
+	$(LINK) $(OFLAG) $@ $(ALL_OBJ_SERV)
 
 fakeclient: $(ALL_OBJ_CLI)
-	$(LINK) $(CFLAGS) $(OFLAG) $@ $(ALL_OBJ_CLI)
+	$(LINK $(OFLAG) $@ $(ALL_OBJ_CLI)
 
 serveur: OSERV
-	$(LINK) $(CFLAGS) $(OSERV) $(OFLAG) $@
+	$(LINK) $(OSERV) $(OFLAG) $@
 
 client: OCLIENT
-	$(LINK) $(CFLAGS) $(OCLIENT) $(OFLAG) $@
+	$(LINK) $(OCLIENT) $(OFLAG) $@
 
 

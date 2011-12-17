@@ -92,40 +92,125 @@ char* itoa(long n)
 	return chaine;
 }
 
-int backupClients(int* clients, int** clientsTrans, int nbClients)
+char* gridCreation(char* nomExec, int* grilleShm, int wgrid, int hgrid)
 {
-	int j;
-	*clientsTrans = malloc(sizeof(int)*nbClients);
-	if(*clientsTrans == NULL)
+	int mode, i;
+	char* grille;
+	key_t key;
+	
+	/* Creation and initialisation of the shared memory segment */
+	if((key = ftok(nomExec, 0)) == -1)
 	{
-		perror("Erreur d'allocation ");
-		return -1;
+		fprintf(stderr, "Executable path isn't accessible : ftok error.\n");
+		exit(EXIT_FAILURE);
 	}
-	for(j = 0 ; j < nbClients ; j++)
+	
+	mode = IPC_CREAT|IPC_EXCL|0666;
+	
+	if((*grilleShm = shmget(key, (wgrid+1)*hgrid, mode)) == -1)
 	{
-		(*clientsTrans)[j] = clients[j];
+		perror("An error occured while creating the grid shared memory segment (shmget)");
+		exit(EXIT_FAILURE);
 	}
-	return 0;
+	
+	if((grille = (char *)shmat(*grilleShm, NULL, 0)) == (char *)-1)
+	{
+		perror("An error occured while attaching the shared memory segment (shmat)");
+		if(shmctl(*grilleShm, IPC_RMID, NULL) == -1)
+		{
+			perror("Shared memory segment's destruction impossible");
+		}
+		exit(EXIT_FAILURE);
+	}
+	
+	for(i = 0 ; i < (wgrid+1)*hgrid -1 ; i++)
+	{
+		if((i+1) % (wgrid+1) == 0)
+			grille[i] = '\n';
+		else
+			grille[i] = '0';
+	}
+	grille[(wgrid+1)*(hgrid/2)+wgrid/2] = '1';
+	grille[(wgrid+1)*hgrid -1] = 0;
+	
+	return grille;
 }
 
-int recupClients(int** clients, int** clientsTrans, int nbClients, int sd_client)
+/* Secondary threads launching function */
+void* gestionClient(void* arg)
 {
-	int j;
-	*clients = realloc(*clients, sizeof(int)*nbClients);
-	if(*clients == NULL)
+	pthread_detach(pthread_self());
+	
+	int i, numThread = -1, tourne = 1;
+	int sd_client = *((int*)arg);
+	
+	printf("Client connecte sur le thread %lu avec la socket %d\n", (unsigned long)(pthread_self()), sd_client);
+	
+	while(tourne)
 	{
-		perror("Erreur de reallocation ");
-		return -1;
+		if(send(sd_client, grille, (W_GRILLE+1)*H_GRILLE, 0) < 1)
+		{
+			//perror("Erreur d'envoi de la grille ");
+			tourne = 0;
+		}
+		else
+		{
+			sleep(FREQ_RAF);
+		}
 	}
-	(*clients)[nbClients-1] = sd_client;
-	for(j = 0 ; j < nbClients-1 ; j++)
+	
+	pthread_mutex_lock(&mutexThreads);
+	printf("Client deconnecte sur le thread %lu avec la socket %d\n", (unsigned long)(pthread_self()), sd_client);
+	
+	close(sd_client);
+	for(i = 0 ; i < nbThreads-1 ; i++)
 	{
-		(*clients)[j] = (*clientsTrans)[j];
+		if(thread_id[i] == pthread_self())
+		{
+			numThread = i;
+		}
+		if(numThread != -1)
+		{
+			socketClients[i] = socketClients[i+1];
+			thread_id[i] = thread_id[i+1];
+		}
 	}
-	free(*clientsTrans);
-	return 0;
+	nbThreads--;
+	thread_id = realloc(thread_id, nbThreads*sizeof(pthread_t));
+	
+	pthread_mutex_unlock(&mutexThreads);
+	
+	return NULL;
 }
 
+/* Signal handlers. Necessary to clean the environnement. */
+void sigintHandler(int sig)
+{
+	printf("SIGINT received…\n");
+	arret = 1;
+}
+
+void sigpipeHandler(int sig)
+{
+	//printf("SIGPIPE received in thread %lu\n", (unsigned long)pthread_self());
+}
+
+void attachSignals()
+{
+	struct sigaction action;
+	
+	memset(&action, 0, sizeof(action));
+	action.sa_handler = sigintHandler;
+	if (sigaction(SIGINT,&action,NULL))
+	{
+		perror("sigaction");
+	}
+	action.sa_handler = sigpipeHandler;
+	if (sigaction(SIGPIPE,&action,NULL))
+	{
+		perror("sigaction");
+	}
+}
 
 
 
