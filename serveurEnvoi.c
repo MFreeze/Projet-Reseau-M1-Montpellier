@@ -1,6 +1,6 @@
 
 
-#include "fonctionsServeurs.h"
+#include "fonctionsServeurE.h"
 
 int *socketClients = NULL;
 int nbThreads = 0;
@@ -18,12 +18,12 @@ int main(int argc, char* argv[])
 {
 	struct sockaddr_in server;
 	int addr_in_size = sizeof(struct sockaddr_in);
-	int i = 1;
-	int sd_client;
+	int i = 1, portSec;
 	pthread_t *thread_id_trans = NULL;
 	int *socketClients_trans = NULL;
 	struct sockaddr_in* client;
-	int sd;
+	int sd, sd_client;
+	pid_t servRecept;
 	
 	client = (struct sockaddr_in *)malloc(addr_in_size);
 	bzero(client,sizeof(client));
@@ -32,13 +32,13 @@ int main(int argc, char* argv[])
 	attachSignals();
 	
 	/* Creation du segment de memoire partagee de la grille */
-	grille = gridCreation(argv[0], &grilleShm, W_GRILLE, H_GRILLE);
+	grille = gridCreation(argv[0], &grilleShm);
 	
 	/* Initialisation du mutex gerant l'acces aux tableaux de threads et de sockets client */
 	pthread_mutex_init(&mutexThreads, NULL);
 	
 	/* init reseau */
-	if((sd = gstArgs(argc, argv, &server, 13321)) < 1)
+	if((sd = gstArgs(argc, argv, &server, 13321, &portSec)) < 1)
 	{
 		free(client);
 		if(shmdt(grille) == -1)
@@ -55,7 +55,28 @@ int main(int argc, char* argv[])
 		else
 			exit(EXIT_FAILURE);
 	}
-	printf("Serveur initialise sur le thread %lu\n", (unsigned long)pthread_self());
+	
+	/* lancement du serveur de reception */
+	servRecept = fork();
+	if(servRecept == -1)
+	{
+		free(client);
+		close(sd);
+		if(shmdt(grille) == -1)
+		{
+			perror("Shared memory segment's detachment impossible");
+		}
+		if(shmctl(grilleShm, IPC_RMID, NULL) == -1)
+		{
+			perror("Shared memory segment's destruction impossible");
+		}
+	}
+	else if(servRecept == 0)
+	{
+		execl("./serveurRecept", "serveurRecept", argv[0], itoa(server.sin_addr.s_addr), itoa(portSec), (char *)0);
+	}
+	
+	//printf("Serveur initialise sur le thread %lu\n", (unsigned long)pthread_self());
 	
 	/* Ecoute des demandes de connexion des clients */
 	if(listen(sd, 10) == -1)
@@ -143,7 +164,7 @@ int main(int argc, char* argv[])
 		perror("Shared memory segment's destruction impossible");
 	}
 	
-	printf("Terminaison du serveur.\n");
+	printf("Terminaison du serveur d'envoi.\n");
 	
 	return 0;
 }

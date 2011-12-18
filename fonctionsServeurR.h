@@ -1,6 +1,6 @@
 
-#ifndef DEF_FSERV
-#define DEF_FSERV
+#ifndef DEF_FSERVR
+#define DEF_FSERVR
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,18 +21,16 @@
 #include <pthread.h>
 #include <signal.h>
 
-#define W_GRILLE 7
-#define H_GRILLE 5
-#define FREQ_RAF 2
+#include "fonctionsServeurs.h"
 
+extern int grilleShm;
+extern char* grille;
+extern int camMoving;
 
-extern int arret;
+int gstArgs(char* argv[], struct sockaddr_in *server);
+void* thread_deplacement(void* arg);
+char* gridRecupAddr(char* nomExec);
 
-
-char* itoa(long n);
-void attachSignals();
-int setNonblocking(int fd);
-
-#endif DEF_FSERV
+#endif
 
 

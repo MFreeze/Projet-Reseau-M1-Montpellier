@@ -1,15 +1,11 @@
 
 
-#include "fonctionsServeurs.h"
+#include "fonctionsServeurR.h"
 
-int *socketClients = NULL;
-int nbThreads = 0;
-pthread_t *thread_id = NULL;
-pthread_mutex_t mutexThreads;
 
-int arret = 0;
-int grilleShm;
 char* grille;
+int arret = 0;
+int camMoving = 0;
 
 /* Thread principal du serveur de reception */
 int main(int argc, char* argv[])
@@ -21,10 +17,10 @@ int main(int argc, char* argv[])
 	int sd_client;
 	pthread_t thread_id;
 	int *socketClients_trans = NULL;
+	int *socketClients = NULL;
 	struct sockaddr_in* client;
 	int sd;
 	time_t timeBthread, timeCur, timeControl = 20;
-	int camMoving = 0;
 	
 	client = (struct sockaddr_in *)malloc(addr_in_size);
 	bzero(client,sizeof(client));
@@ -32,8 +28,11 @@ int main(int argc, char* argv[])
 	/* Gestion des signaux */
 	attachSignals();
 	
-	/* init reseau */
-	if((sd = gstArgs(argc, argv, &server, 13322)) < 1)
+	/* Recuperation du segment de memoire partagee de la grille */
+	grille = gridRecupAddr(argv[1]);
+	
+	/* Init reseau */
+	if((sd = gstArgs(argv, &server)) < 1)
 	{
 		free(client);
 		if(sd == 0)
@@ -42,7 +41,6 @@ int main(int argc, char* argv[])
 			exit(EXIT_FAILURE);
 	}
 	setNonblocking(sd);
-	printf("Serveur initialise sur le thread %lu\n", (unsigned long)pthread_self());
 	
 	/* Ecoute des demandes de connexion des clients */
 	if(listen(sd, 1) == -1)
@@ -56,37 +54,31 @@ int main(int argc, char* argv[])
 	/* boucle d'execution : acceptation des clients et creation des threads associes */
 	while(!arret)
 	{
-		if(nbClients < 19)
+		while(nbClients < 19 && (sd_client = accept(sd, (struct sockaddr *)client, (socklen_t*)(&addr_in_size))) != -1)
 		{
 			// accepter la connexion entrante
-			if((sd_client = accept(sd, (struct sockaddr *)client, (socklen_t*)(&addr_in_size))) == -1)
-			{
-				//perror("accept");
-			}
+			if(socketClients == NULL)
+				socketClients = malloc(sizeof(int));
 			else
 			{
-				if(socketClients == NULL)
-					socketClients = malloc(sizeof(int));
-				else
+				socketClients_trans = malloc((nbClients+1)*sizeof(int));
+				for(i = 0 ; i < nbClients ; i++)
 				{
-					socketClients_trans = malloc((nbClients+1)*sizeof(int));
-					for(i = 0 ; i < nbClients ; i++)
-					{
-						socketClients_trans[i] = socketClients[i];
-					}
-					free(socketClients);
-					socketClients = socketClients_trans;
-					socketClients_trans = NULL;
+					socketClients_trans[i] = socketClients[i];
 				}
-				socketClients[nbClients] = sd_client;
-				nbClients++;
+				free(socketClients);
+				socketClients = socketClients_trans;
+				socketClients_trans = NULL;
 			}
+			socketClients[nbClients] = sd_client;
+			nbClients++;
 		}
 		if(camMoving == 1)
 		{
 			timeCur = time(NULL);
 			if(timeCur - timeBthread >= timeControl)
 			{
+				printf("Le client sur la socket %d perd la controle de la camera.\n", socketClients[0]);
 				pthread_kill(thread_id, SIGINT);
 				close(socketClients[0]);
 				for(i = 0 ; i < nbClients-1 ; i++)
@@ -105,7 +97,7 @@ int main(int argc, char* argv[])
 			/* lancement de l'execution du thread qui s'occupera du client */
 			if(pthread_create(&thread_id, NULL, thread_deplacement, &(socketClients[0])) != 0)
 			{
-				fprintf(stderr, "Thread %lu creation failure.\n", (unsigned long)(thread_id));
+				fprintf(stderr, "Thread creation failure.\n");
 				arret = 1;
 			}
 		}
@@ -126,6 +118,10 @@ int main(int argc, char* argv[])
 	free(client);
 	free(socketClients);
 	close(sd);
+	if(shmdt(grille) == -1)
+	{
+		perror("Shared memory segment's detachment impossible");
+	}
 	
 	printf("Terminaison du serveur de reception.\n");
 	
