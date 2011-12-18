@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 	attachSignals();
 	
 	/* Creation du segment de memoire partagee de la grille */
-	grille = gridCreation(argv[0], &grilleShm);
+	gridCreation(argv[0], &grilleShm);
 	
 	/* Initialisation du mutex gerant l'acces aux tableaux de threads et de sockets client */
 	pthread_mutex_init(&mutexThreads, NULL);

@@ -25,13 +25,14 @@
 #define H_GRILLE 5
 #define FREQ_RAF 2
 
-
+extern char* grille;
 extern int arret;
 
 
 char* itoa(long n);
 void attachSignals();
 int setNonblocking(int fd);
+void initGrille();
 
 #endif DEF_FSERV
 

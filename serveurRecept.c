@@ -6,6 +6,7 @@
 char* grille;
 int arret = 0;
 int camMoving = 0;
+int nbMouvements = 0;
 
 /* Thread principal du serveur de reception */
 int main(int argc, char* argv[])
@@ -51,7 +52,7 @@ int main(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 	}
 	
-	/* boucle d'execution : acceptation des clients et creation des threads associes */
+	/* boucle d'execution : acceptation des clients et creation du thread */
 	while(!arret)
 	{
 		while(nbClients < 19 && (sd_client = accept(sd, (struct sockaddr *)client, (socklen_t*)(&addr_in_size))) != -1)

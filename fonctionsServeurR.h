@@ -23,9 +23,8 @@
 
 #include "fonctionsServeurs.h"
 
-extern int grilleShm;
-extern char* grille;
 extern int camMoving;
+extern int nbMouvements;
 
 int gstArgs(char* argv[], struct sockaddr_in *server);
 void* thread_deplacement(void* arg);

@@ -29,11 +29,10 @@ extern int nbThreads;
 extern pthread_t* thread_id;
 extern pthread_mutex_t mutexThreads;
 extern int grilleShm;
-extern char* grille;
 
 
 int gstArgs(int argc, char* argv[], struct sockaddr_in *server, int portDefault, int* portSec);
-char* gridCreation(char* nomExec, int* grilleShm);
+void gridCreation(char* nomExec, int* grilleShm);
 void* thread_broadcast(void* arg);
 
 #endif

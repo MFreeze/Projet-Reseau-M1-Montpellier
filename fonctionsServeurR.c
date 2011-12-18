@@ -59,47 +59,55 @@ void* thread_deplacement(void* arg)
 	
 	while(tourne)
 	{
+		if(nbMouvements > 50)
+		{
+			initGrille();
+			nbMouvements = 0;
+		}
 		nbLus = recv(sd_client, buffer, 3, 0);
 		if(nbLus < 1)
 		{
 			arret = 1;
 		}
-		
-		if(strchr(buffer, 'd') != NULL)
+		else
 		{
-			if(xPoint < W_GRILLE-1)
+			if(strchr(buffer, 'd') != NULL)
 			{
-				grille[(W_GRILLE+1)*yPoint + xPoint] = '0';
-				xPoint++;
-				grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
+				if(xPoint < W_GRILLE-1)
+				{
+					grille[(W_GRILLE+1)*yPoint + xPoint] = '0';
+					xPoint++;
+					grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
+				}
 			}
-		}
-		if(strchr(buffer, 'g') != NULL)
-		{
-			if(xPoint > 0)
+			if(strchr(buffer, 'g') != NULL)
 			{
-				grille[(W_GRILLE+1)*yPoint + xPoint] = '0';
-				xPoint--;
-				grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
+				if(xPoint > 0)
+				{
+					grille[(W_GRILLE+1)*yPoint + xPoint] = '0';
+					xPoint--;
+					grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
+				}
 			}
-		}
-		if(strchr(buffer, 'h') != NULL)
-		{
-			if(yPoint > 0)
+			if(strchr(buffer, 'h') != NULL)
 			{
-				grille[(W_GRILLE+1)*yPoint + xPoint] = '0';
-				yPoint--;
-				grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
+				if(yPoint > 0)
+				{
+					grille[(W_GRILLE+1)*yPoint + xPoint] = '0';
+					yPoint--;
+					grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
+				}
 			}
-		}
-		if(strchr(buffer, 'b') != NULL)
-		{
-			if(yPoint < H_GRILLE-1)
+			if(strchr(buffer, 'b') != NULL)
 			{
-				grille[(W_GRILLE+1)*yPoint + xPoint] = '0';
-				yPoint++;
-				grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
+				if(yPoint < H_GRILLE-1)
+				{
+					grille[(W_GRILLE+1)*yPoint + xPoint] = '0';
+					yPoint++;
+					grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
+				}
 			}
+			nbMouvements++;
 		}
 	}
 	

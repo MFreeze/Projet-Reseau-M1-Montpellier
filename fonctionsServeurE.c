@@ -106,10 +106,9 @@ int gstArgs(int argc, char* argv[], struct sockaddr_in *server, int portDefault,
 	return sd;
 }
 
-char* gridCreation(char* nomExec, int* grilleShm)
+void gridCreation(char* nomExec, int* grilleShm)
 {
-	int mode, i;
-	char* grille;
+	int mode;
 	key_t key;
 	
 	/* Creation and initialisation of the shared memory segment */
@@ -137,17 +136,8 @@ char* gridCreation(char* nomExec, int* grilleShm)
 		exit(EXIT_FAILURE);
 	}
 	
-	for(i = 0 ; i < (W_GRILLE+1)*H_GRILLE -1 ; i++)
-	{
-		if((i+1) % (W_GRILLE+1) == 0)
-			grille[i] = '\n';
-		else
-			grille[i] = '0';
-	}
-	grille[(W_GRILLE+1)*(H_GRILLE/2)+W_GRILLE/2] = '1';
-	grille[(W_GRILLE+1)*H_GRILLE -1] = 0;
+	initGrille();
 	
-	return grille;
 }
 
 /* Secondary sending threads launching function */

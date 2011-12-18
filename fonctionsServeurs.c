@@ -68,6 +68,20 @@ int setNonblocking(int fd)
     flags = 1;
     return ioctl(fd, FIONBIO, &flags);
 #endif
-}   
+}
+
+void initGrille()
+{
+	int i;
+	for(i = 0 ; i < (W_GRILLE+1)*H_GRILLE -1 ; i++)
+	{
+		if((i+1) % (W_GRILLE+1) == 0)
+			grille[i] = '\n';
+		else
+			grille[i] = '0';
+	}
+	grille[(W_GRILLE+1)*(H_GRILLE/2)+W_GRILLE/2] = '1';
+	grille[(W_GRILLE+1)*H_GRILLE -1] = 0;
+}
 
 
