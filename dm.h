@@ -23,13 +23,15 @@
 #define PORT_ERR				2
 #define ADR_ERR					4
 #define HOST_NAME_ERR		8
+#define PERS_PORT_ERR	 16
 
 #include "pers_sock.h"
 #include <ncurses.h>
 #include <sys/signal.h>
 
 void print_help();
-int read_options (int argc, char **argv, p_sockin_t server_adress);
+int read_options (int argc, char **argv, p_sockin_t server_adress, 
+		p_sockin_t pers_sock);
 
 
 

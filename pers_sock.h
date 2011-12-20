@@ -61,6 +61,8 @@ int create_socket_by_numbers (const char *ip_adr, const int num_port,
 int create_socket_by_hybrid (const char *hostname, const int num_port,
 		const int named);
 
+int create_socket_by_structure (const sockin_t structure, int named);
+
 void fill_sockaddr_in (p_sockin_t addr, int domain, int port, const char *adr_ip);
 
 #endif

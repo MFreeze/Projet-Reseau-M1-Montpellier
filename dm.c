@@ -22,17 +22,28 @@ void print_help() {
 
 }
 
-int read_options (int argc, char **argv, p_sockin_t server_adress) {
+int read_options (int argc, char **argv, p_sockin_t server_adress,
+		p_sockin_t pers_adress) {
 	/* state can take four values :
-	 *			* 0 : everything is alright
-	 *			* 1 : print help
-	 *			* 2 : error with the given port
-	 *			* 4 : error on the given adress */
-	int opt, state = 0, port;
+	 *			*  0 : everything is alright
+	 *			*  1 : print help
+	 *			*  2 : error with the given port
+	 *			*  4 : error with the given adress 
+	 *			*  8 : error with the given server name 
+	 *			* 16 : error with the personal port given */
+	int opt, state = 0, s_port = DEF_PORT, p_port=DEF_PORT;
 	p_host_t host;
+	/* Initialisation de la structure du serveur */
 	server_adress->sin_family = AF_INET;
-	server_adress->sin_port = htons(DEF_PORT);
+	server_adress->sin_port = htons(s_port);
 	inet_aton(DEF_ADR, &(server_adress->sin_addr));
+
+	/* Initialisation de la structure du client */
+	if (pers_adress) {
+		pers_adress->sin_family = AF_INET;
+		pers_adress->sin_port = htons(p_port);
+		pers_adress->sin_addr.s_addr = htonl(INADDR_ANY);
+	}
 
 	while ((opt = getopt(argc, argv,"a:hn:p:P:")) != EOF) {
 		switch (opt) {
@@ -50,14 +61,21 @@ int read_options (int argc, char **argv, p_sockin_t server_adress) {
 					server_adress->sin_addr.s_addr = ((struct in_addr *) host->h_addr)->s_addr;
 				break;
 			case 'p':
-				port = atoi(optarg);
-				if (port > 65535 || port < 0)
+				s_port = atoi(optarg);
+				if (s_port > 65535 || s_port < 0)
 					state |= PORT_ERR | DISP_HELP;
 				else
-					server_adress->sin_port = htons(port);
+					server_adress->sin_port = htons(s_port);
 				break;
 			case 'P':
-
+				p_port = atoi(optarg);
+				if (pers_adress) {
+					if (p_port > 65535 || s_port < 0)
+						state |= PERS_PORT_ERR | DISP_HELP;
+					else
+						pers_adress->sin_port = htons(p_port);
+				}
+				break;
 			default:
 				print_help();
 				break;
@@ -70,11 +88,15 @@ int read_options (int argc, char **argv, p_sockin_t server_adress) {
 		opt ++;
 	}
 	if (state & PORT_ERR) {
-		printf ("Port non valide.\n");
+		printf ("Port du serveur non valide.\n");
 		opt ++;
 	}
 	if (state & HOST_NAME_ERR) {
 		printf ("Nom d'hôte non valide.\n");
+		opt ++;
+	}
+	if (state & PERS_PORT_ERR) {
+		printf ("Port machine client non valide.\n");
 		opt ++;
 	}
 	if (state & DISP_HELP) {
