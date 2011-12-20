@@ -12,7 +12,7 @@ void gstArgs(int argc, char* argv[], struct hostent *hote, struct sockaddr_in *s
 		printf("-N nom du serveur /* par default 'localhost'*/\n");
 		printf("-I adresse ip du serveur /* par default '127.0.0.1'*/\n");
 		printf("-P numero de port du serveur /* par default '13321'*/\n");
-		printf("-p numero de port du client /* par default '13322'*/\n\n");
+		printf("-p numero de port du client /* par default '13324'*/\n\n");
 		
 		exit(EXIT_SUCCESS);
 	}
@@ -44,7 +44,7 @@ void gstArgs(int argc, char* argv[], struct hostent *hote, struct sockaddr_in *s
 	
 	client->sin_family = AF_INET;
 	client->sin_addr.s_addr = adresse.s_addr;
-	client->sin_port = htons(13322);
+	client->sin_port = htons(13324);
 	
 	while(i < argc)
 	{
