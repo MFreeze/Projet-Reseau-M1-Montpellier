@@ -3,6 +3,10 @@
 
 #include <ncurses.h>
 #include <string.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
 
 #define DISP_WIN 0
 #define KEYB_WIN 2

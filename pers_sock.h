@@ -34,8 +34,9 @@
 #define ANONY_SOCK 0
 #define NAMED_SOCK 1
 
-#define DEF_PORT		1664
-#define DEF_ADR			"127.0.0.1"
+#define DEF_PORT		13321
+#define DEF_PORT_R	13322
+#define DEF_ADDR		"127.0.0.1"
 
 typedef struct sockaddr sock_t;
 typedef sock_t* p_sock_t;

@@ -7,7 +7,7 @@ void create_newwin(win_t *wind, int height, int width,
 	wind->_startx = startx;
 	wind->_starty = starty;
 
-	wind->_wind = newwin (height, width, startx, starty);
+	wind->_wind = newwin (height, width, starty, startx);
 	wborder(wind->_wind, '|', '|', '-', '-', '*', '*', '*', '*');
 
 	if (string) 
@@ -59,51 +59,50 @@ win_t **init_screen () {
 	refresh();
 
 	for (i=0; i<WIN_NUMB; i++)
-		init_win (all_win[i]);
+		init_win (allwin[i]);
 
 	/* Display Window Title Intialization */
-	startx = TOP_MARGIN; starty = LEF_MARGIN;
+	starty = TOP_MARGIN; startx = LEF_MARGIN;
 	height = TITLE_HEIGHT; width = COLS * 2 / 3;
-	create_newwin (all_win[DISP_WIN_TIT], height, width,
+	create_newwin (allwin[DISP_WIN_TIT], height, width,
 			startx, starty, "Display");
 
 	/* Display Window Initialization */
-	startx += height;
+	starty += height;
 	height = LINES - TOP_MARGIN - BOT_MARGIN - INT_MARGIN - TITLE_HEIGHT;
-	create_newwin(all_win[DISP_WIN], height, width, startx,
+	create_newwin(allwin[DISP_WIN], height, width, startx,
 			starty, NULL);
 
 	/* Command Window Title Initialization */
-	startx = TOP_MARGIN; starty += INT_MARGIN + width;
-	width = COLS - starty - RIG_MARGIN; height = TITLE_HEIGHT;
-	create_newwin(all_win[KEYB_WIN_TIT], height, width,
+	starty = TOP_MARGIN; startx += INT_MARGIN + width;
+	width = COLS - startx - RIG_MARGIN; height = TITLE_HEIGHT;
+	create_newwin(allwin[KEYB_WIN_TIT], height, width,
 			startx, starty, "Command");
 
 	/* Command Window Initialization */
-	startx += height;
+	starty += height;
 	height = COMMD_HEIGHT;
-	create_newwin(all_win[KEYB_WIN], height, width, startx,
+	create_newwin(allwin[KEYB_WIN], height, width, startx,
 			starty, NULL );
 
 	/* Info Window Title Initialization */
-	startx += COMMD_HEIGHT;
+	starty += COMMD_HEIGHT;
 	height = TITLE_HEIGHT;
-	create_newwin(all_win[INFO_WIN_TIT], height, width, 
+	create_newwin(allwin[INFO_WIN_TIT], height, width, 
 			startx, starty, "Info");
 
 	/* Info Window Initialization */
-	startx += TITLE_HEIGHT;
+	starty += TITLE_HEIGHT;
 	height = LINES - TOP_MARGIN - 2 * TITLE_HEIGHT - INT_MARGIN - BOT_MARGIN - COMMD_HEIGHT;
-	create_newwin(all_win[INFO_WIN], height, width, startx,
+	create_newwin(allwin[INFO_WIN], height, width, startx,
 			starty, NULL);
 
-	mvwprintw (all_win[KEYB_WIN]->_wind, 1, 2, "Input : ");
+	mvwprintw (allwin[KEYB_WIN]->_wind, 1, 2, "Input : ");
 
-	int i=0;
 	for (i=0; i<WIN_NUMB; i++)
-		wrefresh(all_win[i]->_wind);
+		wrefresh(allwin[i]->_wind);
 
-	return all_win;
+	return allwin;
 }
 
 void clean_ncurse (win_t **win) {
@@ -117,22 +116,38 @@ void init_win (win_t *local_win) {
 	local_win->_starty = 0;
 	local_win->_height = 0;
 	local_win->_width = 0;
-	local_win->_posx = 1;
+	local_win->_posx = 2;
 	local_win->_posy = 2;
 	local_win->_wind = NULL;
 }
 
 void print_window (win_t *local_win, const char *texte, int posx, int posy){
-	int x = posx ? posx : local_win->_posx;
-	int y = posy ? posy : local_win->_posy;
+	int x = posx != 0 ? posx : local_win->_posx;
+	int y = posy != 0 ? posy : local_win->_posy;
+	char c;
 
-	if (texte) {
-		mvprintw (local_win, x, y, texte);
-		wrefresh(local_win);
-	}
+	x += local_win->_startx;
+	y += local_win->_starty;
+	int xinit = x, yinit = y;
 	
-	getyx (local_win, x, y);
-	local_win->_posx = x + 1;
-	local_win->_posy = 2;
+	while ((c = *texte++) != '\0') {
+		if (c == '\n') {
+			if (y + 1 != local_win->_height)
+				y++; 
+			x = xinit;
+		}
+		else {
+			if (x+1 != local_win->_width)
+				mvaddch(y, x++, c);
+			else {
+				x = xinit;
+				y++;
+				*texte--;
+			}
+		}
+	}
+
+	local_win->_posx = 2;
+	local_win->_posy = y + 1 - local_win->_starty;
 }
 

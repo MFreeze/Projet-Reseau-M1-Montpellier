@@ -1,22 +1,25 @@
-CC 		= gcc -c
+CC 		= gcc -g -c
 LINK    = gcc -lglib-2.0 -lncurses -pthread -D_REENTRANT
-CFLAGS  = -Wall -g -O2 -I/usr/include/glib-2.0 -D_REENTRANT -pthread
+CFLAGS  = -Wall -lncurses -g -O2 -I/usr/include/glib-2.0 -D_REENTRANT -pthread
 OFLAG  	= -o
 
 CSERVENVOI=fonctionsServeurs.c fonctionsServeurE.c serveurEnvoi.c
 CSERVRECEPT=fonctionsServeurs.c fonctionsServeurR.c serveurRecept.c
-CCLIENT=fonctionsClient.c client.c
+CCLIENT=dm.c gui.c pers_sock.c fonctionsClient.c client.c
 
 OSERVENVOI=fonctionsServeurs.o fonctionsServeurE.o serveurEnvoi.o
 OSERVRECEPT=fonctionsServeurs.o fonctionsServeurR.o serveurRecept.o
-OCLIENT=fonctionsClient.o client.o
+OCLIENT=dm.o gui.o pers_sock.o fonctionsClient.o client.o
 
 ALL_OBJ_SERV = pers_sock.o dm.o controle_cam.o
-ALL_OBJ_CLI  = pers_sock.o dm.o fakeclient.o
+ALL_OBJ_CLI  = gui.o pers_sock.o dm.o fakeclient.o
 
 all: fakeclient controle_cam serveur serveurRecept client
 
 pers_sock.o: pers_sock.c pers_sock.h
+	$(CC) $(CFLAGS) $(OFLAG) $@ $<
+
+gui.o: gui.c gui.h
 	$(CC) $(CFLAGS) $(OFLAG) $@ $<
 
 dm.o: dm.c dm.h pers_sock.o
