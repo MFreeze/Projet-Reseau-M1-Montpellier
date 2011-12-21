@@ -129,6 +129,9 @@ int main(int argc, char **argv) {
 
 	/* Lecture des options */
 	read_options_client(argc, argv, &em_server, &rc_server);
+	
+	/*printf("\nAdresse IP du serveur d'envoi : %s\nPort du serveur d'envoi : %d\n\n", (char*)inet_ntoa(em_server.sin_addr), htons(em_server.sin_port));
+	printf("Adresse IP du serveur de reception : %s\nPort du serveur de reception : %d\n\n", (char*)inet_ntoa(rc_server.sin_addr), htons(rc_server.sin_port));*/
 
 	/* Fork du programme */
 	pid = fork();

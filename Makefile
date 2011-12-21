@@ -1,6 +1,6 @@
 CC 		= gcc -g -c
 LINK    = gcc -lglib-2.0 -lncurses -pthread -D_REENTRANT
-CFLAGS  = -Wall -lncurses -g -O2 -I/usr/include/glib-2.0 -D_REENTRANT -pthread
+CFLAGS  = -Wall -g -O2 -I/usr/include/glib-2.0 -D_REENTRANT -pthread
 OFLAG  	= -o
 
 CSERVENVOI=fonctionsServeurs.c fonctionsServeurE.c serveurEnvoi.c

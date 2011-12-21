@@ -14,7 +14,7 @@ int gstArgs(int argc, char* argv[], struct sockaddr_in *server, int portDefault,
 		printf("Arguments :\n");
 		printf("-n nom de l'hote /* par default 'localhost'*/\n");
 		printf("-i adresse ip de l'hote /* par default '127.0.0.1'*/\n");
-		printf("-p numero de port a utiliser /* par default '13321'*/\n\n");
+		printf("-p numero de port a utiliser /* par default '13321'*/\n");
 		printf("-ps numero de port secondaire a utiliser /* par default '13322'*/\n\n");
 		return 0;
 	}
@@ -101,7 +101,7 @@ int gstArgs(int argc, char* argv[], struct sockaddr_in *server, int portDefault,
 		return -1;
 	}
 	
-	printf("Adresse IP du serveur : %s\nPort du serveur : %d\n\n", (char*)inet_ntoa(server->sin_addr), htons(server->sin_port));
+	printf("Adresse IP du serveur d'envoi : %s\nPort du serveur d'envoi : %d\n\n", (char*)inet_ntoa(server->sin_addr), htons(server->sin_port));
 	
 	return sd;
 }
