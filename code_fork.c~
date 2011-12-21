@@ -50,7 +50,7 @@ while (!arret) {
 		/* Connexion au serveur */
 		while (cpt_con++ < 3 && connecte == -1)
 			connecte = connect(sd, (struct sockaddr *)&rc_server, sizeof(rc_server));
-		if (!connecte) {
+		if (connecte) {
 			fprintf(stderr, "Connexion établie!\n");
 			sleep(1);
 			/* Attends la prise en charge complète du serveur */

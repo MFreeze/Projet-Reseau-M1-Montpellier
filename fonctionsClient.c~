@@ -1,0 +1,27 @@
+
+#include "fonctionsClient.h"
+
+char* itoa(long n)
+{
+	int i = 1, nbChiffres;
+	long trans = n;
+	while(trans > 10)
+	{
+		trans /= 10;
+		i++;
+	}
+	nbChiffres = i;
+	char* chaine = malloc((nbChiffres+1) * sizeof(char));
+	trans = n;
+	
+	for(i = 0 ; i < nbChiffres ; i++)
+	{
+		chaine[nbChiffres-1-i] = 48 + trans % 10;
+		trans /= 10;
+	}
+	chaine[nbChiffres] = 0;
+	
+	return chaine;
+}
+
+

@@ -1,67 +1,118 @@
 !_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
-!_TAG_FILE_SORTED	2	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
 !_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
-ADR_ERR	dm.h	24;"	d
-ALL_OBJ_CLI	Makefile	/^ALL_OBJ_CLI  = pers_sock.o dm.o fakeclient.o$/;"	m
-ALL_OBJ_SERV	Makefile	/^ALL_OBJ_SERV = pers_sock.o dm.o controle_cam.o$/;"	m
 ANONY_SOCK	pers_sock.h	34;"	d
+BOT_MARGIN	gui.h	20;"	d
+CLEAN	client.c	23;"	d	file:
+COMMD_HEIGHT	gui.h	26;"	d
+DEF_ADDR	pers_sock.h	39;"	d
+DEF_FCLIENT	fonctionsClient.h	3;"	d
+DEF_FSERV	fonctionsServeurs.h	3;"	d
+DEF_FSERVE	fonctionsServeurE.h	3;"	d
+DEF_FSERVR	fonctionsServeurR.h	3;"	d
+DEF_PORT	pers_sock.h	37;"	d
+DEF_PORT_R	pers_sock.h	38;"	d
+DISP_HELP	dm.h	22;"	d
+DISP_WIN	gui.h	11;"	d
+DISP_WIN_TIT	gui.h	15;"	d
+DM_H	dm.h	20;"	d
+EM_SERV_PORT	dm.h	23;"	d
+FREQ_RAF	fonctionsServeurs.h	26;"	d
+GRID_H	client.c	22;"	d	file:
+GRID_W	client.c	21;"	d	file:
+GUI_H	gui.h	2;"	d
+HOST_NAME_ERR	dm.h	26;"	d
+H_GRILLE	fonctionsServeurs.h	25;"	d
+INFO_WIN	gui.h	13;"	d
+INFO_WIN_TIT	gui.h	17;"	d
+INT_MARGIN	gui.h	23;"	d
+KEYB_WIN	gui.h	12;"	d
+KEYB_WIN_TIT	gui.h	16;"	d
+LEF_MARGIN	gui.h	21;"	d
+NAMED_SOCK	pers_sock.h	35;"	d
+PERS_SOCK_H	pers_sock.h	20;"	d
+RC_SERV_PORT	dm.h	25;"	d
+RIG_MARGIN	gui.h	22;"	d
+SERV_ADDR	dm.h	24;"	d
+TITLE_HEIGHT	gui.h	25;"	d
+TOP_MARGIN	gui.h	19;"	d
+WIN_NUMB	gui.h	29;"	d
+W_GRILLE	fonctionsServeurs.h	24;"	d
+_fd_in	client.c	/^	int _fd_in;$/;"	m	struct:buff	file:
+_fd_out	client.c	/^	int _fd_out;$/;"	m	struct:buff	file:
+_height	gui.h	/^	int _startx, _starty, _height, _width;$/;"	m	struct:__anon1
+_pid_fils	client.c	/^	int _pid_fils;$/;"	m	struct:buff	file:
+_posx	gui.h	/^	int _posx, _posy;$/;"	m	struct:__anon1
+_posy	gui.h	/^	int _posx, _posy;$/;"	m	struct:__anon1
+_startx	gui.h	/^	int _startx, _starty, _height, _width;$/;"	m	struct:__anon1
+_starty	gui.h	/^	int _startx, _starty, _height, _width;$/;"	m	struct:__anon1
+_width	gui.h	/^	int _startx, _starty, _height, _width;$/;"	m	struct:__anon1
+_wind	gui.h	/^	WINDOW *_wind;$/;"	m	struct:__anon1
 arret	client.c	/^int arret = 0;$/;"	v
-arret	serveur.c	/^int arret = 0;$/;"	v
-backupClients	fonctionsServeur.c	/^int backupClients(int* clients, int** clientsTrans, int nbClients)$/;"	f
-CC	Makefile	/^CC 			= gcc -c$/;"	m
-CFLAGS	Makefile	/^CFLAGS  = -Wall -pthread -lncurses -g -O2 -lglib-2.0 -I\/usr\/include\/glib-2.0 -I\/usr\/lib\/x86_64-linux-gnu\/glib-2.0\/include $/;"	m
-CLEAN	client.c	19;"	d	file:
-CLEAN	serveur.c	20;"	d	file:
-client	serveur.c	/^struct sockaddr_in* client;$/;"	v	typeref:struct:sockaddr_in
+arret	serveurEnvoi.c	/^int arret = 0;$/;"	v
+arret	serveurRecept.c	/^int arret = 0;$/;"	v
+attachSignals	fonctionsServeurs.c	/^void attachSignals()$/;"	f
+buff	client.c	/^struct buff {$/;"	s	file:
+camMoving	serveurRecept.c	/^int camMoving = 0;$/;"	v
+changement	client.c	/^int changement = 0;$/;"	v
+clean_ncurse	gui.c	/^void clean_ncurse (win_t **win) {$/;"	f
+connected	client.c	/^void connected () {$/;"	f
+create_newwin	gui.c	/^void create_newwin(win_t *wind, int height, int width, $/;"	f
 create_socket_by_hybrid	pers_sock.c	/^int create_socket_by_hybrid (const char *hostname, const int num_port, $/;"	f
 create_socket_by_name	pers_sock.c	/^int create_socket_by_name (const char *hostname, const char *servname, $/;"	f
 create_socket_by_numbers	pers_sock.c	/^int create_socket_by_numbers (const char *ip_adr, const int num_port,$/;"	f
-DEF_ADR	pers_sock.h	38;"	d
-DEF_PORT	pers_sock.h	37;"	d
-DISP_HELP	dm.h	22;"	d
-DM_H	dm.h	20;"	d
-endloop	client.c	/^void endloop () $/;"	f
+create_socket_by_structure	pers_sock.c	/^int create_socket_by_structure (const sockin_t address, int named){$/;"	f
+destroy_win	gui.c	/^void destroy_win(win_t *local_win) {$/;"	f
+destroy_win_tab	gui.c	/^void destroy_win_tab (win_t **all_win) {$/;"	f
+disconnected	client.c	/^void disconnected () {$/;"	f
+en_attente	client.c	/^int en_attente = 0;$/;"	v
+endloop	client.c	/^void endloop () {$/;"	f
 fill_sockaddr_in	pers_sock.c	/^void fill_sockaddr_in(p_sockin_t addr, int domain, int port, const char *adr_ip) {$/;"	f
-FREQ_RAF	serveur.c	27;"	d	file:
-gestionClient	serveur.c	/^void* gestionClient(void* arg)$/;"	f
-GRID_H	client.c	18;"	d	file:
-GRID_W	client.c	17;"	d	file:
+fn_thread	client.c	/^void fn_thread (void *tube) {$/;"	f
+gridCreation	fonctionsServeurE.c	/^void gridCreation(char* nomExec, int* grilleShm)$/;"	f
+gridRecupAddr	fonctionsServeurR.c	/^char* gridRecupAddr(char* nomExec)$/;"	f
+grille	serveurEnvoi.c	/^char* grille;$/;"	v
+grille	serveurRecept.c	/^char* grille;$/;"	v
+grilleShm	serveurEnvoi.c	/^int grilleShm;$/;"	v
 gstArgs	fonctionsClient.c	/^void gstArgs(int argc, char* argv[], struct hostent *hote, struct sockaddr_in *server, struct sockaddr_in *client)$/;"	f
-gstArgs	fonctionsServeur.c	/^void gstArgs(int argc, char* argv[], struct hostent *hote, struct sockaddr_in *server)$/;"	f
-HOST_NAME_ERR	dm.h	25;"	d
+gstArgs	fonctionsServeurE.c	/^int gstArgs(int argc, char* argv[], struct sockaddr_in *server, int portDefault, int* portSec)$/;"	f
+gstArgs	fonctionsServeurR.c	/^int gstArgs(char* argv[], struct sockaddr_in *server)$/;"	f
 host_t	pers_sock.h	/^typedef struct hostent host_t;$/;"	t	typeref:struct:hostent
-H_GRILLE	serveur.c	26;"	d	file:
+initGrille	fonctionsServeurs.c	/^void initGrille()$/;"	f
+init_screen	gui.c	/^win_t **init_screen () {$/;"	f
+init_win	gui.c	/^void init_win (win_t *local_win) {$/;"	f
 itoa	fonctionsClient.c	/^char* itoa(long n)$/;"	f
-itoa	fonctionsServeur.c	/^char* itoa(long n)$/;"	f
-LINK	Makefile	/^LINK    = gcc$/;"	m
-main	client.c	/^int main(int argc, char* argv[])$/;"	f
+itoa	fonctionsServeurs.c	/^char* itoa(long n)$/;"	f
+main	client.c	/^int main(int argc, char **argv) {$/;"	f
 main	controle_cam.c	/^int main (int argc, char **argv) {$/;"	f
 main	fakeclient.c	/^int main (int argc, char **argv) {$/;"	f
-main	serveur.c	/^int main(int argc, char* argv[])$/;"	f
-mutexThreads	serveur.c	/^pthread_mutex_t mutexThreads;$/;"	v
-NAMED_SOCK	pers_sock.h	35;"	d
-nbThreads	serveur.c	/^int sd, nbThreads = 0;$/;"	v
-OFLAG	Makefile	/^OFLAG  	= -o$/;"	m
-PERS_SOCK_H	pers_sock.h	20;"	d
-PORT_ERR	dm.h	23;"	d
-print_help	dm.c	/^void print_help() {$/;"	f
-proto_t	pers_sock.h	/^typedef struct protoent proto_t;$/;"	t	typeref:struct:protoent
+main	serveurEnvoi.c	/^int main(int argc, char* argv[])$/;"	f
+main	serveurRecept.c	/^int main(int argc, char* argv[])$/;"	f
+mutexThreads	serveurEnvoi.c	/^pthread_mutex_t mutexThreads;$/;"	v
+nbMouvements	serveurRecept.c	/^int nbMouvements = 0;$/;"	v
+nbThreads	serveurEnvoi.c	/^int nbThreads = 0;$/;"	v
 p_host_t	pers_sock.h	/^typedef host_t* p_host_t;$/;"	t
 p_proto_t	pers_sock.h	/^typedef proto_t* p_proto_t;$/;"	t
 p_serv_t	pers_sock.h	/^typedef serv_t* p_serv_t;$/;"	t
-p_sockin_t	pers_sock.h	/^typedef sockin_t* p_sockin_t;$/;"	t
 p_sock_t	pers_sock.h	/^typedef sock_t* p_sock_t;$/;"	t
-read_options	dm.c	/^int read_options (int argc, char **argv, p_sockin_t server_adress) {$/;"	f
-recupClients	fonctionsServeur.c	/^int recupClients(int** clients, int** clientsTrans, int nbClients, int sd_client)$/;"	f
-sd	serveur.c	/^int sd, nbThreads = 0;$/;"	v
+p_sockin_t	pers_sock.h	/^typedef sockin_t* p_sockin_t;$/;"	t
+print_help	dm.c	/^void print_help() {$/;"	f
+print_window	gui.c	/^void print_window (win_t *local_win, const char *texte, int posx, int posy){$/;"	f
+pris_en_charge	client.c	/^int pris_en_charge = 0;$/;"	v
+proto_t	pers_sock.h	/^typedef struct protoent proto_t;$/;"	t	typeref:struct:protoent
+read_options_client	dm.c	/^int read_options_client (int argc, char **argv, p_sockin_t em_address,$/;"	f
 serv_t	pers_sock.h	/^typedef struct servent serv_t;$/;"	t	typeref:struct:servent
-sigintHandler	serveur.c	/^void sigintHandler(int sig)$/;"	f
-sigpipeHandler	serveur.c	/^void sigpipeHandler(int sig)$/;"	f
-socketClients	serveur.c	/^int *socketClients = NULL;$/;"	v
-sockin_t	pers_sock.h	/^typedef struct sockaddr_in sockin_t;$/;"	t	typeref:struct:sockaddr_in
+setNonblocking	fonctionsServeurs.c	/^int setNonblocking(int fd)$/;"	f
+sigintHandler	fonctionsServeurs.c	/^void sigintHandler(int sig)$/;"	f
+sigpipeHandler	fonctionsServeurs.c	/^void sigpipeHandler(int sig)$/;"	f
 sock_t	pers_sock.h	/^typedef struct sockaddr sock_t;$/;"	t	typeref:struct:sockaddr
-thread_id	serveur.c	/^pthread_t *thread_id = NULL;$/;"	v
-W_GRILLE	serveur.c	25;"	d	file:
+socketClients	serveurEnvoi.c	/^int *socketClients = NULL;$/;"	v
+sockin_t	pers_sock.h	/^typedef struct sockaddr_in sockin_t;$/;"	t	typeref:struct:sockaddr_in
+thread_broadcast	fonctionsServeurE.c	/^void* thread_broadcast(void* arg)$/;"	f
+thread_deplacement	fonctionsServeurR.c	/^void* thread_deplacement(void* arg)$/;"	f
+thread_id	serveurEnvoi.c	/^pthread_t *thread_id = NULL;$/;"	v
+update_win	gui.c	/^void update_win (win_t *mywin, int height, int width, $/;"	f
+win_t	gui.h	/^} win_t;$/;"	t	typeref:struct:__anon1

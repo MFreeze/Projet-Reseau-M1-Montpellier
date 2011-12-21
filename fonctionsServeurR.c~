@@ -58,7 +58,6 @@ void* thread_deplacement(void* arg)
 	
 	/* signification de la connection au client */
 	send(sd_client, 1, sizeof(int), 0);
-	printf ("Données envoyées\n");
 	
 	while(tourne)
 	{

@@ -21,7 +21,6 @@ int main(int argc, char* argv[])
 	int *socketClients = NULL;
 	struct sockaddr_in* client;
 	int sd;
-	int prems = 0;
 	time_t timeBthread, timeCur, timeControl = 20;
 	
 	client = (struct sockaddr_in *)malloc(addr_in_size);
@@ -63,10 +62,7 @@ int main(int argc, char* argv[])
 			if(socketClients == NULL) {
 				printf ("Première connexion ok...\n");
 				socketClients = malloc(sizeof(int));
-				if (!prems) {
-					setNonblocking(sd);
-					prems ++;
-				}
+				setNonblocking(sd);
 			}
 			else
 			{

@@ -77,7 +77,6 @@ void endloop () {
 
 void endwait() {
 	sommeil = 0;
-	fprintf (stderr, "Signal SIGUSR1 reçu...\n");
 }
 
 void connected () {

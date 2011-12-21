@@ -12,8 +12,19 @@
 #include <errno.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include "pers_sock.h"
+#include <ncurses.h>
+#include <sys/signal.h>
 
-void gstArgs(int argc, char* argv[], struct hostent *hote, struct sockaddr_in *server, struct sockaddr_in *client);
+#define DISP_HELP				1
+#define EM_SERV_PORT		2
+#define SERV_ADDR				4
+#define RC_SERV_PORT		8
+#define HOST_NAME_ERR  16
+
+void print_help();
+int read_options_client (int argc, char **argv, p_sockin_t server_adress, 
+		p_sockin_t pers_sock);
 char* itoa(long n);
 
 #endif
