@@ -82,6 +82,23 @@ int setNonblocking(int fd)
 #endif
 }
 
+int setBlocking(int fd)
+{
+    int flags;
+	
+	#if defined(O_NONBLOCK)
+	if (-1 == (flags = fcntl(fd, F_GETFL, 0)))
+        flags = 0;
+	flags = flags&~O_NONBLOCK;
+	
+    return fcntl(fd, F_SETFL, flags);
+	
+	#else
+	flags = 0;
+    return ioctl(fd, FIONBIO, &flags);
+	#endif
+}
+
 void initGrille()
 {
 	int i;

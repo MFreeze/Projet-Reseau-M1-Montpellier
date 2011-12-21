@@ -36,10 +36,11 @@ int gstArgs(char* argv[], struct sockaddr_in *server)
 /* Secondary receving threads launching function */
 void* thread_deplacement(void* arg)
 {
-	pthread_detach(pthread_self());
-	
+	//pthread_detach(pthread_self());
 	int tourne = 1, nbLus, i, xPoint, yPoint;
-	int sd_client = *((int*)arg);
+	pthread_mutex_lock(&mutexSockets);
+	int sd_client = socketClients[0];
+	pthread_mutex_unlock(&mutexSockets);
 	char buffer[3];
 	
 
@@ -58,9 +59,13 @@ void* thread_deplacement(void* arg)
 	sprintf(buffer, "%d", 1);
 	
 	/* signification de la connection au client */
-	if (send(sd_client, buffer, 3*sizeof(char), 0) != -1) {
-	//printf ("Données envoyées\n");
+	if(send(sd_client, buffer, 3*sizeof(char), 0) == -1)
+	{
+		perror("Signification de la connection au client en erreur ");
 	}
+	else
+		printf("Signification de la connection au client effectuee.\n");
+	
 	
 	while(tourne)
 	{
@@ -69,10 +74,15 @@ void* thread_deplacement(void* arg)
 			initGrille();
 			nbMouvements = 0;
 		}
-		nbLus = recv(sd_client, buffer, 3, 0);
+		nbLus = recv(sd_client, buffer, 3*sizeof(char), 0);
 		if(nbLus < 1)
 		{
-			tourne = 0;
+			if(errno == 35)
+				continue;
+			//perror("Erreur de lecture ");
+			//printf("errno : %d\n", errno);
+			else
+				tourne = 0;
 		}
 		else
 		{
@@ -127,11 +137,27 @@ void* thread_deplacement(void* arg)
 		socketClients[i] = socketClients[i+1];
 	}
 	nbClients--;
-	socketClients = realloc(socketClients, nbClients*sizeof(int));
+	if(nbClients == 0)
+	{
+		socketClients = NULL;
+		printf("Plus de clients sur la liste d'attente.\n");
+	}
+	else
+	{
+		socketClients = realloc(socketClients, nbClients*sizeof(int));
+		printf("Clients restants sur la liste d'attente : ");
+		for(i = 0 ; i < nbClients ; i++)
+		{
+			printf("%d ", socketClients[i]);
+		}
+		printf("\n");
+	}
+	
+	
 	pthread_mutex_unlock(&mutexSockets);
 	camMoving = 0;
 	
-	return NULL;
+	pthread_exit(NULL);
 }
 
 char* gridRecupAddr(char* nomExec)

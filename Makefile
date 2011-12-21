@@ -11,21 +11,13 @@ OSERVENVOI=fonctionsServeurs.o fonctionsServeurE.o serveurEnvoi.o
 OSERVRECEPT=fonctionsServeurs.o fonctionsServeurR.o serveurRecept.o
 OCLIENT=gui.o pers_sock.o fonctionsClient.o client.o
 
-ALL_OBJ_SERV = pers_sock.o dm.o controle_cam.o
-ALL_OBJ_CLI  = gui.o pers_sock.o fakeclient.o
 
-all: fakeclient controle_cam serveur serveurRecept client
+all: serveur serveurRecept client
 
 pers_sock.o: pers_sock.c pers_sock.h
 	$(CC) $(CFLAGS) $(OFLAG) $@ $<
 
 gui.o: gui.c gui.h
-	$(CC) $(CFLAGS) $(OFLAG) $@ $<
-
-fakeclient.o: fakeclient.c pers_sock.o dm.o
-	$(CC) $(CFLAGS) $(OFLAG) $@ $<
-
-controle_cam.o: controle_cam.c pers_sock.o dm.o
 	$(CC) $(CFLAGS) $(OFLAG) $@ $<
 	
 OSERVENVOI: $(CSERVENVOI)
@@ -42,11 +34,6 @@ clean:
 	rm *.o
 	rm *~
 
-controle_cam: $(ALL_OBJ_SERV)
-	$(LINK) $(OFLAG) $@ $(ALL_OBJ_SERV)
-
-fakeclient: $(ALL_OBJ_CLI)
-	$(LINK $(OFLAG) $@ $(ALL_OBJ_CLI)
 
 serveur : OSERVENVOI
 	$(LINK) $(OSERVENVOI) $(OFLAG) $@

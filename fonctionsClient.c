@@ -25,25 +25,25 @@ char* itoa(long n)
 }
 
 void print_help() {
-
+	
 }
 
 int read_options_client (int argc, char **argv, p_sockin_t em_address,
-		p_sockin_t rc_address) {
+						 p_sockin_t rc_address) {
 	int opt, state = 0;
 	int em_port = DEF_PORT, rc_port=DEF_PORT_R;
 	p_host_t host;
-
+	
 	/* Initialisation de la structure du serveur d'émission */
 	em_address->sin_family = AF_INET;
 	em_address->sin_port = htons(em_port);
 	inet_aton(DEF_ADDR, &em_address->sin_addr);
-
+	
 	/* Initialisation de la structure du serveur de réception */
 	rc_address->sin_family = AF_INET;
 	rc_address->sin_port = htons(rc_port);
 	inet_aton(DEF_ADDR, &rc_address->sin_addr);
-
+	
 	while ((opt = getopt(argc, argv,"a:hn:p:P:")) != EOF) {
 		switch (opt) {
 			case 'a':
@@ -83,7 +83,7 @@ int read_options_client (int argc, char **argv, p_sockin_t em_address,
 		}
 	}
 	opt = 0;
-
+	
 	if (state & SERV_ADDR) {
 		printf ("Adresse ip non valide.\n");
 		opt ++;
@@ -104,6 +104,110 @@ int read_options_client (int argc, char **argv, p_sockin_t em_address,
 		print_help();
 		opt ++;
 	}
-
+	
 	return opt;
 }
+
+
+/* Fonction du thread chargé de la lecture clavier */
+void fn_thread (void *tub) {
+	pthread_detach(pthread_self());
+	
+	sockin_t rc_server = *((sockin_t*)tub);
+	int c = 0, terminaison, cpt_con, connecte, sd;
+	char buf[3] = {0};
+	
+	
+	while (1) {
+		c = getch();
+		
+		if(c == 'c')
+		{
+			pthread_mutex_lock(&mutexWin);
+			print_window(allwin[INFO_WIN], "En attente du controle", 0, 0);
+			refresh();
+			pthread_mutex_unlock(&mutexWin);
+			cpt_con=0;
+			connecte = -1;
+			/* Connexion au serveur */
+			sd = create_socket_by_numbers (NULL, 0, 0);
+			while (cpt_con++ < 3 && connecte == -1)
+				connecte = connect(sd, (struct sockaddr *)&rc_server, sizeof(rc_server));
+			if (connecte == -1) {
+				fprintf(stderr, "Connexion pour le controle de la camera impossible.\n");
+				pthread_mutex_lock(&mutexWin);
+				print_window(allwin[INFO_WIN], "Controle de la camera refuse", 0, 0);
+				refresh();
+				pthread_mutex_unlock(&mutexWin);
+			}
+			else
+			{
+				/* Attends la prise en charge complète du serveur */
+				if (recv (sd, buf, 3*sizeof(char), 0) > 0) {
+					fprintf(stderr, "Connexion établie!\n");
+					
+					pthread_mutex_lock(&mutexWin);
+					print_window (allwin[INFO_WIN], "Controle de la camera acquis", 0, 0);
+					refresh();
+					pthread_mutex_unlock(&mutexWin);
+					
+					terminaison = 0;
+					buf[1] = 0; buf[2] = 0;
+					c = getch();
+					while (c != 'q' && !terminaison) {
+						
+						switch (c) {
+							case KEY_LEFT:
+								fprintf(stderr, "Recu Left\n");
+								buf[0] = 'l';
+								if(send (sd, buf, 3*sizeof(char), 0) == -1)
+								{
+									terminaison = 1;
+								}
+								break;
+							case KEY_RIGHT:
+								fprintf(stderr, "Recu Right\n");
+								buf[0] = 'r';
+								if(send (sd, buf, 3*sizeof(char), 0) == -1)
+								{
+									terminaison = 1;
+								}
+								break;
+							case KEY_UP:
+								fprintf(stderr, "Recu Up\n");
+								buf[0] = 'u';
+								if(send (sd, buf, 3*sizeof(char), 0) == -1)
+								{
+									terminaison = 1;
+								}
+								break;
+							case KEY_DOWN:
+								fprintf(stderr, "Recu Down\n");
+								buf[0] = 'd';
+								if(send (sd, buf, 3*sizeof(char), 0) == -1)
+								{
+									terminaison = 1;
+								}
+								break;
+							default:
+								break;
+						}
+						if(!terminaison)
+							c = getch();
+					}
+					if(c == 'q')
+						close(sd);
+					
+					pthread_mutex_lock(&mutexWin);
+					print_window(allwin[INFO_WIN], "Deconnecte du controle de camera", 0, 0);
+					refresh();
+					pthread_mutex_unlock(&mutexWin);
+				}
+			}
+		}
+	}
+	printf("Terminaison du thread\n");
+	pthread_exit(NULL);
+}
+
+

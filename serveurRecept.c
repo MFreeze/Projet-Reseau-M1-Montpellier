@@ -18,12 +18,11 @@ int main(int argc, char* argv[])
 	int addr_in_size = sizeof(struct sockaddr_in);
 	int i = 1;
 	int sd_client;
-	pthread_t thread_id;
+	pthread_t thread_id = -1;
 	int *socketClients_trans = NULL;
 	struct sockaddr_in* client;
-	int sd;
-	int prems = 0;
-	time_t timeBthread, timeCur, timeControl = 20;
+	int sd, joined;
+	time_t timeBthread, timeCur, timeControl = 10;
 	
 	client = (struct sockaddr_in *)malloc(addr_in_size);
 	bzero(client,sizeof(client));
@@ -70,10 +69,7 @@ int main(int argc, char* argv[])
 			if(socketClients == NULL) {
 				//printf ("Première connexion ok...\n");
 				socketClients = malloc(sizeof(int));
-				if (!prems) {
-					setNonblocking(sd);
-					prems ++;
-				}
+				setNonblocking(sd);
 			}
 			else
 			{
@@ -97,26 +93,34 @@ int main(int argc, char* argv[])
 			timeCur = time(NULL);
 			if(timeCur - timeBthread >= timeControl)
 			{
-				//printf("Le client sur la socket %d perd la controle de la camera.\n", socketClients[0]);
-				pthread_mutex_lock(&mutexSockets);
+				printf("Le temps du client sur la socket %d est ecoule.\n", socketClients[0]);
 				close(socketClients[0]);
-				pthread_mutex_unlock(&mutexSockets);
+				pthread_join(thread_id, NULL);
+				joined = 1;
 			}
 		}
 		if(camMoving == 0 && nbClients > 0)
 		{
+			if(thread_id != -1 && !joined)
+			{
+				pthread_join(thread_id, NULL);
+				joined = 1;
+			}
 			timeBthread = time(NULL);
 			
 			/* lancement de l'execution du thread qui s'occupera du client */
 			pthread_mutex_lock(&mutexSockets);
-			if(pthread_create(&thread_id, NULL, thread_deplacement, &(socketClients[0])) != 0)
+			if(pthread_create(&thread_id, NULL, thread_deplacement, NULL) != 0)
 			{
 				fprintf(stderr, "Thread creation failure.\n");
 				arret = 1;
 			}
 			pthread_mutex_unlock(&mutexSockets);
 			camMoving = 1;
+			joined = 0;
 		}
+		if(nbClients == 0)
+			setBlocking(sd);
 	}
 	
 	
