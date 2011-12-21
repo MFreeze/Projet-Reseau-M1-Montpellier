@@ -1,0 +1,88 @@
+\documentclass[a4paper]{article}
+\usepackage[francais]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[applemac]{inputenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage[colorlinks=true]{hyperref}
+\hypersetup{urlcolor=blue,linkcolor=black,colorlinks=true} 
+\usepackage{algorithm,algorithmic}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage{lscape}
+
+\pagestyle{headings}
+\thispagestyle{empty}
+\geometry{a4paper,twoside,left=2.5cm,right=2.5cm,marginparwidth=1.2cm,marginparsep=3mm,top=2.5cm,bottom=2.5cm}
+\begin{document}
+\large
+\setlength{\parindent}{ 0 pt}
+\lstset{language=C, showstringspaces=false, numbers=left, numberstyle=\tiny, tabsize=4}
+\setlength{\parskip}{5mm plus2mm minus2mm}
+Chloé DESDOUITS \hfill M1 Informatique MOCA\\
+Guillerme DUVILLIE
+\vfill
+{\centering \Huge \bfseries Projet de réseau \par}
+\vfill
+23 décembre 2011 \hfill UM2
+
+\newpage
+\tableofcontents
+\thispagestyle{empty}
+
+\setlength{\parindent}{1 cm}
+\pagenumbering{arabic}
+\newpage
+
+
+\section{Mode d'emploi}\label{manuel}
+Tout d'abord, notre application nécessite l'installation de la bibliothèque \href{http://ftp.gnu.org/pub/gnu/ncurses/}{Ncurses} qui gère l'interface console. Il suffit ensuite de compiler grâce au Makefile.
+
+L'exécutable du serveur se nomme "serveur" et accepte les paramètres suivants :
+
+\begin{itemize}
+\item -n nom de l'hote (par default 'localhost')
+\item -i adresse ip de l'hote (par default '127.0.0.1')
+\item -p numero de port qu'utilisera le serveur d'envoi (par default '13321')
+\item -ps numero de port secondaire qu'utilisera le serveur de réception (par default '13322')
+\end{itemize}
+
+
+L'exécutable du client se nomme "client" et accepte les paramètres suivants :
+
+\begin{itemize}
+\item -n nom de l'hote (par default 'localhost')
+\item -a adresse ip de l'hote (par default '127.0.0.1')
+\item -p numero de port qu'utilise le serveur d'envoi (par default '13321')
+\item -P numero de port qu'utilise le serveur de réception (par default '13322')
+\end{itemize}
+
+Les exécutables se quittent en envoyant le signal SIGINT (ctrl-c).
+
+
+\section{Architecture de l'application}\label{archi}
+Commençons par examiner l'architecture du serveur. Notre serveur est divisé en deux processus, les deux étant multi-thread.
+
+Le processus père est le serveur d'envoi ; il gère le broadcast de la grille. Son thread principal accepte les connexions des clients et crée un thread secondaire par client connecté. Les threads secondaires envoient la grille à leur client respectif.
+
+Le processus fils est le serveur de réception ; il traite les demandes de déplacement de la caméra. Son thread principal gère la file d'attente des clients qui veulent déplacer la caméra. Il lance un thread secondaire pour le premier client qui demande la main. Ce thread secondaire gère le déplacement du pointeur dans la grille. Le thread principal tue le thread secondaire à la fin du temps imparti et relance un thread secondaire pour le client suivant.\\
+
+
+Le client, quant à lui,
+
+
+\section{Protocoles d'échange}\label{protocoles}
+
+
+\section{Schémas algorithmiques}\label{algo}
+
+
+\section{Difficultés et solutions}\label{difficultes}
+
+
+\vfill
+{\raggedleft Réalisé avec \LaTeX{} \par}
+
+\end{document}

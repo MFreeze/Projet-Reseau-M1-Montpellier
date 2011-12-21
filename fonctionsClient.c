@@ -39,7 +39,7 @@ int read_options_client (int argc, char **argv, p_sockin_t em_address,
 	em_address->sin_port = htons(em_port);
 	inet_aton(DEF_ADDR, &em_address->sin_addr);
 
-	/* Initialisation de la strcutre du serveur de réception */
+	/* Initialisation de la structure du serveur de réception */
 	rc_address->sin_family = AF_INET;
 	rc_address->sin_port = htons(rc_port);
 	inet_aton(DEF_ADDR, &rc_address->sin_addr);

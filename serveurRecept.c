@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	printf ("Ready\n");
+	printf ("Serveur de reception initialise.\n");
 	
 	/* boucle d'execution : acceptation des clients et creation du thread */
 	while(!arret)
