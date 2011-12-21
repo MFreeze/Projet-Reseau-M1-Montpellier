@@ -30,6 +30,8 @@ memset(&action_sigusr1, 0, sizeof(action_sigusr1));
 memset(&action_sigusr2, 0, sizeof(action_sigusr2));
 action_sigusr1.sa_handler = connected;
 action_sigusr2.sa_handler = disconnected;
+action_sigusr1.sa_flags = SA_RESTART;
+action_sigusr2.sa_flags = SA_RESTART;
 
 if (sigaction(SIGUSR2, &action_sigusr2, NULL)) {
 	perror ("sigaction2");
@@ -44,11 +46,9 @@ if (sigaction(SIGUSR1, &action_sigusr1, NULL)) {
 pthread_t thread;
 int ret;
 
-comm._fd_in = tube[0];
-comm._fd_out = tube[1];
-comm._pid_fils = pid;
+fprintf (stderr, "tube : %d %d\n", tube[0], tube[1]);
 
-if ((ret = pthread_create(&thread, NULL, (void *)&fn_thread, (void *) &comm)) != 0) {
+if ((ret = pthread_create(&thread, NULL, (void *)&fn_thread, (void *)pid)) != 0) {
 	perror ("pthread_create");
 	return -1;
 }
@@ -73,6 +73,7 @@ if(connect(sd, (struct sockaddr*)&em_server, sizeof(em_server)) == -1) {
 }
 
 print_window (allwin[INFO_WIN], "Client connecte.", 0, 0);
+int tempi = 0;
 
 while(!arret)
 {
@@ -84,6 +85,7 @@ while(!arret)
 			print_window (allwin[INFO_WIN], "Erreur de reception ", 0, 0);
 		arret = 1;
 	}
+	fprintf (stderr, "Réception données : %d, %d\n", ++tempi, changement);
 	if (changement) {
 		if (pris_en_charge) 
 			print_window (allwin[INFO_WIN], "Controle de la camera acquis", 0, 0);

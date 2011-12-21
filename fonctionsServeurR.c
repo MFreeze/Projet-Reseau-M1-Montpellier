@@ -56,9 +56,12 @@ void* thread_deplacement(void* arg)
 		}
 	}
 	
+	sprintf(buffer, "%d", 1);
+	
 	/* signification de la connection au client */
-	send(sd_client, 1, sizeof(int), 0);
+	if (send(sd_client, buffer, 3*sizeof(char), 0)!= -1) {
 	printf ("Données envoyées\n");
+	}
 	
 	while(tourne)
 	{
@@ -82,6 +85,7 @@ void* thread_deplacement(void* arg)
 					xPoint++;
 					grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
 				}
+				printf("r\n");
 			}
 			if(strchr(buffer, 'l') != NULL)
 			{
@@ -91,6 +95,7 @@ void* thread_deplacement(void* arg)
 					xPoint--;
 					grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
 				}
+				printf("l\n");
 			}
 			if(strchr(buffer, 'u') != NULL)
 			{
@@ -100,6 +105,7 @@ void* thread_deplacement(void* arg)
 					yPoint--;
 					grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
 				}
+				printf("u\n");
 			}
 			if(strchr(buffer, 'd') != NULL)
 			{
@@ -109,6 +115,7 @@ void* thread_deplacement(void* arg)
 					yPoint++;
 					grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
 				}
+				printf("d\n");
 			}
 			nbMouvements++;
 		}

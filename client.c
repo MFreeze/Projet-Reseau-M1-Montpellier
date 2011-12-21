@@ -31,38 +31,54 @@ int arret = 0;
 int pris_en_charge = 0;
 int en_attente = 0;
 int changement = 0;
-int sommeil = 1;
+int tube[2] = {0, 0};
 
 /* Fonction du thread chargé de la lecture clavier */
-void fn_thread (void *tube) {
-	struct buff *fd = (struct buff *) tube;
+void fn_thread (void *tub) {
+	int pid = (int)tub;
 	int c = 0;
+	char buf[2] = {0};
+	fprintf (stderr, "Tube thread : %d %d\n", tube[1], tube[0]);
 	while (1) {
 		c = getch();
 		switch (c) {
 			case 'c' :
 				if (!pris_en_charge && !en_attente) {
-					kill(fd->_pid_fils, SIGUSR1);
+					kill(pid, SIGUSR1);
 					en_attente = 1; changement = 1;
 				}
 				break;
 			case 'q' :
 				if ((!pris_en_charge && en_attente) || pris_en_charge) {
-					write (fd->_fd_out, (void *)'q', sizeof(char));
+					buf[0] = 'q';
+					if (write (tube[1], buf, 2*sizeof(char)) < 1)
+						fprintf (stderr, "Plantage\n");
 					en_attente = 0; pris_en_charge = 0; changement = 1;
 				}
 				break;
 			case KEY_LEFT:
-				write (fd->_fd_out, (void *)'l', sizeof(char));
+				fprintf(stderr, "Recu Left\n");
+				buf[0] = 'l';
+				if (write (tube[1], buf, 2*sizeof(char)) < 1)
+					fprintf (stderr, "Plantage !\n");
 				break;
 			case KEY_RIGHT:
-				write (fd->_fd_out, (void *)'r', sizeof(char));
+				fprintf(stderr, "Recu Right\n");
+				buf[0] = 'r';
+				if (write (tube[1], buf, 2*sizeof(char)) < 1) 
+					fprintf(stderr, "Plantage \n");
 				break;
 			case KEY_UP:
-				write (fd->_fd_out, (void *)'u', sizeof(char));
+				fprintf(stderr, "Recu Up\n");
+				buf[0] = 'u';
+				if (write (tube[1], buf, 2*sizeof(char)) < 1) 
+					fprintf(stderr, "Plantage \n");
 				break;
 			case KEY_DOWN:
-				write (fd->_fd_out, (void *)'d', sizeof(char));
+				fprintf(stderr, "Recu Down\n");
+				buf[0] = 'd';
+				if (write (tube[1], buf, 2*sizeof(char)) < 1) 
+					fprintf(stderr, "Plantage \n");
 				break;
 			default:
 				break;
@@ -76,7 +92,6 @@ void endloop () {
 }
 
 void endwait() {
-	sommeil = 0;
 	fprintf (stderr, "Signal SIGUSR1 reçu...\n");
 }
 
@@ -99,11 +114,10 @@ int main(int argc, char **argv) {
 	char recvit[grid_size];
 	int nbLus, sd;
 	int sommeil = 1;
-	int pid = 0, tube[2];	
+	int pid = 0;	
 	int ppid = getpid();
 	struct sigaction action;
 	struct sigaction action_sigusr1, action_sigusr2;
-	struct buff comm;
 
 	if (pipe(tube)) {
 		perror("pipe");
