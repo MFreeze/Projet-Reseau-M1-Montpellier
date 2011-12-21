@@ -87,6 +87,8 @@ int main(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 	}
 	
+	printf ("Serveur d'envoi initialise.\n\n");
+	
 	/* boucle d'execution : acceptation des clients et creation des threads associes */
 	while(!arret)
 	{

@@ -123,6 +123,8 @@ int main(int argc, char **argv) {
 		perror("pipe");
 		return -1;
 	}
+	
+	freopen("errlog", "w+", stderr);
 
 	bzero(&em_server,sizeof(em_server));
 	bzero(&rc_server,sizeof(rc_server));

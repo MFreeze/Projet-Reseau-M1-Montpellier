@@ -7,18 +7,19 @@ char* grille;
 int arret = 0;
 int camMoving = 0;
 int nbMouvements = 0;
+int *socketClients = NULL;
+pthread_mutex_t mutexSockets;
+int nbClients = 0;
 
 /* Thread principal du serveur de reception */
 int main(int argc, char* argv[])
 {
-	int nbClients = 0;
 	struct sockaddr_in server;
 	int addr_in_size = sizeof(struct sockaddr_in);
 	int i = 1;
 	int sd_client;
 	pthread_t thread_id;
 	int *socketClients_trans = NULL;
-	int *socketClients = NULL;
 	struct sockaddr_in* client;
 	int sd;
 	int prems = 0;
@@ -30,6 +31,9 @@ int main(int argc, char* argv[])
 	/* Gestion des signaux */
 	attachSignals();
 	
+	/* Initialisation du mutex gerant l'acces au tableau de sockets client */
+	pthread_mutex_init(&mutexSockets, NULL);
+	
 	/* Recuperation du segment de memoire partagee de la grille */
 	grille = gridRecupAddr(argv[1]);
 	
@@ -37,6 +41,7 @@ int main(int argc, char* argv[])
 	if((sd = gstArgs(argv, &server)) < 1)
 	{
 		free(client);
+		kill(getppid(), SIGINT);
 		if(sd == 0)
 			exit(EXIT_SUCCESS);
 		else
@@ -49,10 +54,11 @@ int main(int argc, char* argv[])
 		perror("listen");
 		free(client);
 		close(sd);
+		kill(getppid(), SIGINT);
 		exit(EXIT_FAILURE);
 	}
 
-	printf ("Serveur de reception initialise.\n");
+	printf ("Serveur de reception initialise.\n\n");
 	
 	/* boucle d'execution : acceptation des clients et creation du thread */
 	while(!arret)
@@ -60,8 +66,9 @@ int main(int argc, char* argv[])
 		if(nbClients < 19 && (sd_client = accept(sd, (struct sockaddr *)client, (socklen_t*)(&addr_in_size))) != -1)
 		{
 			// accepter la connexion entrante
+			pthread_mutex_lock(&mutexSockets);
 			if(socketClients == NULL) {
-				printf ("Première connexion ok...\n");
+				//printf ("Première connexion ok...\n");
 				socketClients = malloc(sizeof(int));
 				if (!prems) {
 					setNonblocking(sd);
@@ -75,30 +82,25 @@ int main(int argc, char* argv[])
 				{
 					socketClients_trans[i] = socketClients[i];
 				}
-				printf("Nouvelle connexion ok...\n");
+				//printf("Nouvelle connexion ok...\n");
 				free(socketClients);
 				socketClients = socketClients_trans;
 				socketClients_trans = NULL;
 			}
 			socketClients[nbClients] = sd_client;
 			nbClients++;
-			printf("Client en Liste d'attente...");
+			pthread_mutex_unlock(&mutexSockets);
+			printf("Client sur la socket %d en liste d'attente pour le controle.\n", sd_client);
 		}
 		if(camMoving == 1)
 		{
 			timeCur = time(NULL);
 			if(timeCur - timeBthread >= timeControl)
 			{
-				printf("Le client sur la socket %d perd la controle de la camera.\n", socketClients[0]);
-				pthread_kill(thread_id, SIGINT);
+				//printf("Le client sur la socket %d perd la controle de la camera.\n", socketClients[0]);
+				pthread_mutex_lock(&mutexSockets);
 				close(socketClients[0]);
-				for(i = 0 ; i < nbClients-1 ; i++)
-				{
-					socketClients[i] = socketClients[i+1];
-				}
-				nbClients--;
-				socketClients = realloc(socketClients, nbClients*sizeof(int));
-				camMoving = 0;
+				pthread_mutex_unlock(&mutexSockets);
 			}
 		}
 		if(camMoving == 0 && nbClients > 0)
@@ -106,11 +108,14 @@ int main(int argc, char* argv[])
 			timeBthread = time(NULL);
 			
 			/* lancement de l'execution du thread qui s'occupera du client */
+			pthread_mutex_lock(&mutexSockets);
 			if(pthread_create(&thread_id, NULL, thread_deplacement, &(socketClients[0])) != 0)
 			{
 				fprintf(stderr, "Thread creation failure.\n");
 				arret = 1;
 			}
+			pthread_mutex_unlock(&mutexSockets);
+			camMoving = 1;
 		}
 	}
 	

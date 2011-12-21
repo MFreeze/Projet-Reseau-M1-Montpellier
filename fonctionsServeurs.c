@@ -38,16 +38,28 @@ void sigpipeHandler(int sig)
 
 void attachSignals()
 {
+	//int i;
 	struct sigaction action;
 	
 	memset(&action, 0, sizeof(action));
-	action.sa_handler = sigintHandler;
-	if (sigaction(SIGINT,&action,NULL))
+	
+	action.sa_handler = sigpipeHandler;
+	if (sigaction(SIGPIPE,&action,NULL))
 	{
 		perror("sigaction");
 	}
-	action.sa_handler = sigpipeHandler;
-	if (sigaction(SIGPIPE,&action,NULL))
+	
+	/*for(i = 0 ; i < 33 ; i++)
+	{
+		action.sa_handler = sigpipeHandler;
+		if (sigaction(i,&action,NULL))
+		{
+			perror("sigaction");
+		}
+	}*/
+	
+	action.sa_handler = sigintHandler;
+	if (sigaction(SIGINT,&action,NULL))
 	{
 		perror("sigaction");
 	}

@@ -28,7 +28,7 @@ int gstArgs(char* argv[], struct sockaddr_in *server)
 		return -1;
 	}
 	
-	printf("Adresse IP du serveur de reception : %s\nPort du serveur de reception : %d\n\n", (char*)inet_ntoa(server->sin_addr), htons(server->sin_port));
+	printf("Adresse IP du serveur de reception : %s\nPort du serveur de reception : %d\n", (char*)inet_ntoa(server->sin_addr), htons(server->sin_port));
 	
 	return sd;
 }
@@ -42,7 +42,6 @@ void* thread_deplacement(void* arg)
 	int sd_client = *((int*)arg);
 	char buffer[3];
 	
-	camMoving = 1;
 
 	printf("Le client sur la socket %d prend la controle de la camera.\n", sd_client);
 	
@@ -59,8 +58,8 @@ void* thread_deplacement(void* arg)
 	sprintf(buffer, "%d", 1);
 	
 	/* signification de la connection au client */
-	if (send(sd_client, buffer, 3*sizeof(char), 0)!= -1) {
-	printf ("Données envoyées\n");
+	if (send(sd_client, buffer, 3*sizeof(char), 0) != -1) {
+	//printf ("Données envoyées\n");
 	}
 	
 	while(tourne)
@@ -73,7 +72,7 @@ void* thread_deplacement(void* arg)
 		nbLus = recv(sd_client, buffer, 3, 0);
 		if(nbLus < 1)
 		{
-			arret = 1;
+			tourne = 0;
 		}
 		else
 		{
@@ -85,7 +84,7 @@ void* thread_deplacement(void* arg)
 					xPoint++;
 					grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
 				}
-				printf("r\n");
+				printf("Deplacement du pointeur vers la droite.\n");
 			}
 			if(strchr(buffer, 'l') != NULL)
 			{
@@ -95,7 +94,7 @@ void* thread_deplacement(void* arg)
 					xPoint--;
 					grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
 				}
-				printf("l\n");
+				printf("Deplacement du pointeur vers la gauche.\n");
 			}
 			if(strchr(buffer, 'u') != NULL)
 			{
@@ -105,7 +104,7 @@ void* thread_deplacement(void* arg)
 					yPoint--;
 					grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
 				}
-				printf("u\n");
+				printf("Deplacement du pointeur vers le haut.\n");
 			}
 			if(strchr(buffer, 'd') != NULL)
 			{
@@ -115,13 +114,21 @@ void* thread_deplacement(void* arg)
 					yPoint++;
 					grille[(W_GRILLE+1)*yPoint + xPoint] = '1';
 				}
-				printf("d\n");
+				printf("Deplacement du pointeur vers la bas.\n");
 			}
 			nbMouvements++;
 		}
 	}
 	
 	printf("Le client sur la socket %d perd la controle de la camera.\n", sd_client);
+	pthread_mutex_lock(&mutexSockets);
+	for(i = 0 ; i < nbClients-1 ; i++)
+	{
+		socketClients[i] = socketClients[i+1];
+	}
+	nbClients--;
+	socketClients = realloc(socketClients, nbClients*sizeof(int));
+	pthread_mutex_unlock(&mutexSockets);
 	camMoving = 0;
 	
 	return NULL;

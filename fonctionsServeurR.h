@@ -25,6 +25,9 @@
 
 extern int camMoving;
 extern int nbMouvements;
+extern int *socketClients;
+extern pthread_mutex_t mutexSockets;
+extern int nbClients;
 
 int gstArgs(char* argv[], struct sockaddr_in *server);
 void* thread_deplacement(void* arg);
