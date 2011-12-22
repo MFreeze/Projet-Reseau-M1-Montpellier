@@ -24,7 +24,8 @@ int main(int argc, char* argv[])
 	int *socketClients_trans = NULL;
 	struct sockaddr_in* client;
 	int sd, joined;
-	time_t timeBthread, timeCur, timeControl = FULL_TIME_CONTROL;
+	time_t timeBthread, timeCur;
+	int timeControl = FULL_TIME_CONTROL;
 	
 	client = (struct sockaddr_in *)malloc(addr_in_size);
 	bzero(client,sizeof(client));
@@ -86,7 +87,7 @@ int main(int argc, char* argv[])
 			socketClients[nbClients] = sd_client;
 			nbClients++;
 			pthread_mutex_unlock(&mutexSockets);
-			timeControl = FULL_TIME_CONTROL / nbClients;
+			//timeControl = FULL_TIME_CONTROL / nbClients;
 			printf("Client sur la socket %d en liste d'attente pour le controle.\n", sd_client);
 		}
 		if(camMoving == 1)
@@ -98,14 +99,18 @@ int main(int argc, char* argv[])
 				close(socketClients[0]);
 				pthread_join(thread_id, NULL);
 				joined = 1;
-				timeControl = FULL_TIME_CONTROL / nbClients;
+				//timeControl = (FULL_TIME_CONTROL / nbClients);
+			}
+			else
+			{
+				usleep(10000);
 			}
 		}
 		if(camMoving == 0 && thread_id != -1 && !joined)
 		{
 			pthread_join(thread_id, NULL);
 			joined = 1;
-			timeControl = FULL_TIME_CONTROL / nbClients;
+			//timeControl = (FULL_TIME_CONTROL / nbClients);
 		}
 		if(camMoving == 0 && nbClients > 0)
 		{
@@ -123,7 +128,9 @@ int main(int argc, char* argv[])
 			joined = 0;
 		}
 		if(nbClients == 0)
+		{
 			setBlocking(sd);
+		}
 	}
 	
 	
