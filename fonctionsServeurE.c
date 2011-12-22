@@ -9,11 +9,11 @@ int gstArgs(int argc, char* argv[], struct sockaddr_in *server, int portDefault,
 	bzero(&adServer,sizeof(adServer));
 	int i = 1, sd = -1;
 	
-	if(argc == 2 && strcmp(argv[1], "--help")==0)
+	if(argc == 2 && (strcmp(argv[1], "--help")==0 || strcmp(argv[1], "-h")==0))
 	{
 		printf("Arguments :\n");
 		printf("-n nom de l'hote /* par default 'localhost'*/\n");
-		printf("-i adresse ip de l'hote /* par default '127.0.0.1'*/\n");
+		printf("-a adresse ip de l'hote /* par default '127.0.0.1'*/\n");
 		printf("-p numero de port a utiliser /* par default '13321'*/\n");
 		printf("-ps numero de port secondaire a utiliser /* par default '13322'*/\n\n");
 		return 0;
@@ -51,7 +51,7 @@ int gstArgs(int argc, char* argv[], struct sockaddr_in *server, int portDefault,
 			server->sin_addr.s_addr = adServer.s_addr;
 			i+=2;
 		}
-		else if(strcmp(argv[i], "-i")==0)
+		else if(strcmp(argv[i], "-a")==0)
 		{
 			server->sin_addr.s_addr = inet_addr(argv[i+1]);
 			i+=2;
