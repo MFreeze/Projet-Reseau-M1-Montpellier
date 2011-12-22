@@ -32,7 +32,6 @@ extern int arret;
 char* itoa(long n);
 void attachSignals();
 int setNonblocking(int fd);
-int setBlocking(int fd);
 void initGrille();
 
 #endif DEF_FSERV
