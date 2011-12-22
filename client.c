@@ -3,8 +3,8 @@
 #include "fonctionsClient.h"
 
 
-#define GRID_W 48
-#define GRID_H 32
+#define GRID_W 16
+#define GRID_H 9
 
 struct buff {
 	int _fd_in;
