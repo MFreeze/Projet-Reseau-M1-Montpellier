@@ -29,7 +29,7 @@
 #define CLIENT_ADDR 32
 #define CLIENT_PORT 64
 
-
+extern sockin_t em_server, rc_server, client;
 extern win_t **allwin;
 extern pthread_mutex_t mutexWin;
 

@@ -36,7 +36,6 @@ int gstArgs(char* argv[], struct sockaddr_in *server)
 /* Secondary receving threads launching function */
 void* thread_deplacement(void* arg)
 {
-	//pthread_detach(pthread_self());
 	int tourne = 1, nbLus, i, xPoint, yPoint;
 	pthread_mutex_lock(&mutexSockets);
 	int sd_client = socketClients[0];
@@ -69,10 +68,13 @@ void* thread_deplacement(void* arg)
 	
 	while(tourne)
 	{
-		if(nbMouvements > 50)
+		if(nbMouvements >= 50)
 		{
 			initGrille();
+			xPoint = ((W_GRILLE+1)*(H_GRILLE/2)+W_GRILLE/2) % (W_GRILLE+1);
+			yPoint = ((W_GRILLE+1)*(H_GRILLE/2)+W_GRILLE/2) / (W_GRILLE+1);
 			nbMouvements = 0;
+			printf("Grille reinitialisee apres 50 mouvements.\n");
 		}
 		nbLus = recv(sd_client, buffer, 3*sizeof(char), 0);
 		if(nbLus < 1)

@@ -2,6 +2,8 @@
 
 #include "fonctionsServeurR.h"
 
+#define FULL_TIME_CONTROL 60
+
 
 char* grille;
 int arret = 0;
@@ -22,7 +24,7 @@ int main(int argc, char* argv[])
 	int *socketClients_trans = NULL;
 	struct sockaddr_in* client;
 	int sd, joined;
-	time_t timeBthread, timeCur, timeControl = 10;
+	time_t timeBthread, timeCur, timeControl = FULL_TIME_CONTROL;
 	
 	client = (struct sockaddr_in *)malloc(addr_in_size);
 	bzero(client,sizeof(client));
@@ -62,12 +64,11 @@ int main(int argc, char* argv[])
 	/* boucle d'execution : acceptation des clients et creation du thread */
 	while(!arret)
 	{
+		// accepter la connexion entrante
 		if(nbClients < 19 && (sd_client = accept(sd, (struct sockaddr *)client, (socklen_t*)(&addr_in_size))) != -1)
 		{
-			// accepter la connexion entrante
 			pthread_mutex_lock(&mutexSockets);
 			if(socketClients == NULL) {
-				//printf ("Première connexion ok...\n");
 				socketClients = malloc(sizeof(int));
 				setNonblocking(sd);
 			}
@@ -78,7 +79,6 @@ int main(int argc, char* argv[])
 				{
 					socketClients_trans[i] = socketClients[i];
 				}
-				//printf("Nouvelle connexion ok...\n");
 				free(socketClients);
 				socketClients = socketClients_trans;
 				socketClients_trans = NULL;
@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
 			socketClients[nbClients] = sd_client;
 			nbClients++;
 			pthread_mutex_unlock(&mutexSockets);
+			timeControl = FULL_TIME_CONTROL / nbClients;
 			printf("Client sur la socket %d en liste d'attente pour le controle.\n", sd_client);
 		}
 		if(camMoving == 1)
@@ -93,19 +94,21 @@ int main(int argc, char* argv[])
 			timeCur = time(NULL);
 			if(timeCur - timeBthread >= timeControl)
 			{
-				printf("Le temps du client sur la socket %d est ecoule.\n", socketClients[0]);
+				printf("Le temps du client (%ds) sur la socket %d est ecoule.\n", timeControl, socketClients[0]);
 				close(socketClients[0]);
 				pthread_join(thread_id, NULL);
 				joined = 1;
+				timeControl = FULL_TIME_CONTROL / nbClients;
 			}
+		}
+		if(camMoving == 0 && thread_id != -1 && !joined)
+		{
+			pthread_join(thread_id, NULL);
+			joined = 1;
+			timeControl = FULL_TIME_CONTROL / nbClients;
 		}
 		if(camMoving == 0 && nbClients > 0)
 		{
-			if(thread_id != -1 && !joined)
-			{
-				pthread_join(thread_id, NULL);
-				joined = 1;
-			}
 			timeBthread = time(NULL);
 			
 			/* lancement de l'execution du thread qui s'occupera du client */
