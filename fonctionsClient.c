@@ -25,31 +25,48 @@ char* itoa(long n)
 }
 
 void print_help() {
-	
+	printf("Arguments :\n");
+	printf("-n nom de l'hote /* par default 'localhost'*/\n");
+	printf("-N nom de l'hote du serveur /* par default 'localhost'*/\n");
+	printf("-a adresse ip de l'hote /* par default '127.0.0.1'*/\n");
+	printf("-A adresse ip du serveur /* par default '127.0.0.1'*/\n");
+	printf("-p numero de port a utiliser /* par default '13324'*/\n");
+	printf("-P numero de port qu'utilise le serveur d'envoi /* par default '13321'*/\n");
+	printf("-S numero de port qu'utilise le serveur de reception /* par default '13322'*/\n\n");
+	exit(EXIT_SUCCESS);
 }
 
-int read_options_client (int argc, char **argv, p_sockin_t em_address,
-						 p_sockin_t rc_address) {
+int read_options_client (int argc, char **argv, p_sockin_t em_server,
+						 p_sockin_t rc_server, p_sockin_t client) {
 	int opt, state = 0;
-	int em_port = DEF_PORT, rc_port=DEF_PORT_R;
+	int em_port = DEF_PORT_SE, rc_port=DEF_PORT_SR, client_port = DEF_PORT;
 	p_host_t host;
 	
 	/* Initialisation de la structure du serveur d'émission */
-	em_address->sin_family = AF_INET;
-	em_address->sin_port = htons(em_port);
-	inet_aton(DEF_ADDR, &em_address->sin_addr);
+	em_server->sin_family = AF_INET;
+	em_server->sin_port = htons(em_port);
+	inet_aton(DEF_ADDR, &em_server->sin_addr);
 	
 	/* Initialisation de la structure du serveur de réception */
-	rc_address->sin_family = AF_INET;
-	rc_address->sin_port = htons(rc_port);
-	inet_aton(DEF_ADDR, &rc_address->sin_addr);
+	rc_server->sin_family = AF_INET;
+	rc_server->sin_port = htons(rc_port);
+	inet_aton(DEF_ADDR, &rc_server->sin_addr);
 	
-	while ((opt = getopt(argc, argv,"a:hn:p:P:")) != EOF) {
+	/* Initialisation de la structure du client */
+	client->sin_family = AF_INET;
+	client->sin_port = htons(client_port);
+	inet_aton(DEF_ADDR, &client->sin_addr);
+	
+	while ((opt = getopt(argc, argv,"a:A:hn:N:p:P:S:")) != EOF) {
 		switch (opt) {
 			case 'a':
-				if (inet_aton(optarg, &(em_address->sin_addr)) == 0)
+				if (inet_aton(optarg, &(client->sin_addr)) == 0)
+					state |= CLIENT_ADDR | DISP_HELP;
+				break;
+			case 'A':
+				if (inet_aton(optarg, &(em_server->sin_addr)) == 0)
 					state |= SERV_ADDR | DISP_HELP;
-				else if(inet_aton(optarg, &(rc_address->sin_addr)) == 0)
+				else if(inet_aton(optarg, &(rc_server->sin_addr)) == 0)
 					state |= SERV_ADDR | DISP_HELP;
 				break;
 			case 'h':
@@ -59,22 +76,38 @@ int read_options_client (int argc, char **argv, p_sockin_t em_address,
 				if ((host = gethostbyname(optarg)) == NULL)
 					state |= HOST_NAME_ERR | DISP_HELP;
 				else
-					em_address->sin_addr.s_addr = ((struct in_addr *) host->h_addr)->s_addr;
+					client->sin_addr.s_addr = ((struct in_addr *) host->h_addr)->s_addr;
+				break;
+			case 'N':
+				if ((host = gethostbyname(optarg)) == NULL)
+					state |= HOST_NAME_ERR | DISP_HELP;
+				else
+				{
+					em_server->sin_addr.s_addr = ((struct in_addr *) host->h_addr)->s_addr;
+					rc_server->sin_addr.s_addr = ((struct in_addr *) host->h_addr)->s_addr;
+				}
 				break;
 			case 'p':
+				client_port = atoi(optarg);
+				if (client_port > 65535 || client_port < 0)
+					state |= CLIENT_PORT | DISP_HELP;
+				else
+					client->sin_port = htons(client_port);
+				break;
+			case 'P':
 				em_port = atoi(optarg);
 				if (em_port > 65535 || em_port < 0)
 					state |= EM_SERV_PORT | DISP_HELP;
 				else
-					em_address->sin_port = htons(em_port);
+					em_server->sin_port = htons(em_port);
 				break;
-			case 'P':
+			case 'S':
 				rc_port = atoi(optarg);
-				if (rc_address) {
+				if (rc_server) {
 					if (rc_port > 65535 || rc_port < 0)
 						state |= RC_SERV_PORT | DISP_HELP;
 					else
-						rc_address->sin_port = htons(rc_port);
+						rc_server->sin_port = htons(rc_port);
 				}
 				break;
 			default:
@@ -85,25 +118,34 @@ int read_options_client (int argc, char **argv, p_sockin_t em_address,
 	opt = 0;
 	
 	if (state & SERV_ADDR) {
-		printf ("Adresse ip non valide.\n");
+		printf ("Adresse ip du serveur non valide.\n");
+		opt ++;
+	}
+	if (state & CLIENT_ADDR) {
+		printf ("Adresse ip du client non valide.\n");
 		opt ++;
 	}
 	if (state & EM_SERV_PORT) {
-		printf ("Port du serveur non valide.\n");
+		printf ("Port du serveur d'envoi non valide.\n");
+		opt ++;
+	}
+	if (state & RC_SERV_PORT) {
+		printf ("Port du serveur de reception non valide.\n");
+		opt ++;
+	}
+	if (state & CLIENT_PORT) {
+		printf ("Port machine client non valide.\n");
 		opt ++;
 	}
 	if (state & HOST_NAME_ERR) {
 		printf ("Nom d'hôte non valide.\n");
 		opt ++;
 	}
-	if (state & RC_SERV_PORT) {
-		printf ("Port machine client non valide.\n");
-		opt ++;
-	}
 	if (state & DISP_HELP) {
 		print_help();
 		opt ++;
 	}
+	
 	
 	return opt;
 }
