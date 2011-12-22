@@ -64,7 +64,7 @@ L'exécutable du client se nomme "client" et accepte les paramètres suivants :
 \item -h affichage de l'aide
 \end{itemize}
 
-La demande de contrôle de la caméra s'effectue en pressant la touche 'c'. La direction est donnée grâce aux touches directionnelles.
+Une fois le client lancé, appuyer sur la touche 'entrée' lancera l'interface console. La demande de contrôle de la caméra s'effectue en pressant la touche 'c'. On peut annuler cette demande ou relâcher le contrôle prématurément en appuyant sur 'q'. La direction est donnée à la caméra grâce aux touches directionnelles.
 
 Les exécutables se quittent en envoyant le signal SIGINT (ctrl-c).
 
@@ -77,7 +77,7 @@ Le processus père est le serveur d'envoi ; il gère le broadcast de la grille. So
 Le processus fils est le serveur de réception ; il traite les demandes de déplacement de la caméra. Son thread principal gère la file d'attente des clients qui veulent déplacer la caméra. Il lance un thread secondaire pour le premier client qui demande la main. Ce thread secondaire gère le déplacement du pointeur dans la grille. Le thread principal tue le thread secondaire à la fin du temps imparti et relance un thread secondaire pour le client suivant.\\
 
 
-Le client, quant à lui,
+Le client, quant à lui, est également multi-threads. Son thread principal gère la réception et l'affichage de la grille. Tandis que son thread secondaire gère les entrées clavier et envoi les demandes de contrôle de la caméra au serveur de réception.
 
 
 \section{Protocoles d'échange}\label{protocoles}
@@ -87,7 +87,7 @@ Le client, quant à lui,
 
 
 \section{Difficultés et solutions}\label{difficultes}
-
+Lorsqu'un thread secondaire utilise les appels systèmes recv ou send en mode connecté alors que la socket a été fermée de l'autre côté, un signal SIGPIPE est émis. Ce signal doit être intercepté par le thread principal sous peine de terminer l'application.
 
 \vfill
 {\raggedleft Réalisé avec \LaTeX{} \par}
