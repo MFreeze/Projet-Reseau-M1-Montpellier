@@ -31,7 +31,7 @@ void print_help() {
 	printf ("\tPermet à un utilisateur de se connecter au serveur et de demander le contrôle de la caméra.\n");
 	printf("OPTIONS :\n");
 	printf("\t-h, Affiche l'aide et quitte.\n");
-	printf("\t-a serveur_address, Définit l'adresse IP du serveur.\n");
+	printf("\t-a serveur_address, Définit l'adresse IP du serveur.");
 	printf("\t-n hostname, Retrouve l'adresse IP du serveur à partir de son nom d'hôtes.\n");
 	printf("\t-p emission_server_port, Spécifie le port du serveur d'émission d'image.\n");
 	printf("\t-P recep_server_port, Spécifie le port du serveur de contrôle de la caméra.\n");
