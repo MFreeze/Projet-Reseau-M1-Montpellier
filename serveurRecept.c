@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 			socketClients[nbClients] = sd_client;
 			nbClients++;
 			pthread_mutex_unlock(&mutexSockets);
-			//timeControl = FULL_TIME_CONTROL / nbClients;
+			timeControl = FULL_TIME_CONTROL / nbClients;
 			printf("Client sur la socket %d en liste d'attente pour le controle.\n", sd_client);
 		}
 		if(camMoving == 1)
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
 				close(socketClients[0]);
 				pthread_join(thread_id, NULL);
 				joined = 1;
-				//timeControl = (FULL_TIME_CONTROL / nbClients);
+				timeControl = nbClients > 0 ? (FULL_TIME_CONTROL / nbClients) : 60;
 			}
 			else
 			{
@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
 		{
 			pthread_join(thread_id, NULL);
 			joined = 1;
-			//timeControl = (FULL_TIME_CONTROL / nbClients);
+			timeControl = nbClients > 0 ? (FULL_TIME_CONTROL / nbClients) : 60;
 		}
 		if(camMoving == 0 && nbClients > 0)
 		{
