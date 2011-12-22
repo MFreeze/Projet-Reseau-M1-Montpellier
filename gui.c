@@ -97,10 +97,7 @@ win_t **init_screen () {
 	create_newwin(allwin[INFO_WIN], height, width, startx,
 			starty, NULL);
 
-	mvwprintw (allwin[KEYB_WIN]->_wind, 2, 2, "c : Demande controle camera");
-	mvwprintw (allwin[KEYB_WIN]->_wind, 3, 2, "fleches : Demande controle camera");
-	mvwprintw (allwin[KEYB_WIN]->_wind, 4, 2, "q : quitte le controle camera");
-	mvwprintw (allwin[KEYB_WIN]->_wind, 5, 2, "Ctrl+c : quitte le programme");
+	mvwprintw (allwin[KEYB_WIN]->_wind, 1, 2, "Input : ");
 
 	for (i=0; i<WIN_NUMB; i++)
 		wrefresh(allwin[i]->_wind);
@@ -131,7 +128,7 @@ void print_window (win_t *local_win, const char *texte, int posx, int posy){
 
 	x += local_win->_startx;
 	y += local_win->_starty;
-	int xinit = x;
+	int xinit = x, yinit = y;
 	
 	while ((c = *texte++) != '\0') {
 		if (c == '\n') {

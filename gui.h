@@ -23,7 +23,7 @@
 #define INT_MARGIN 2
 
 #define TITLE_HEIGHT 3
-#define COMMD_HEIGHT 8
+#define COMMD_HEIGHT 5
 
 /* Count of windows which will be displayed on the screen */
 #define WIN_NUMB 6

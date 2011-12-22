@@ -26,8 +26,6 @@
 #define SERV_ADDR				4
 #define RC_SERV_PORT		8
 #define HOST_NAME_ERR  16
-#define CLIENT_ADDR 32
-#define CLIENT_PORT 64
 
 
 extern win_t **allwin;
@@ -35,7 +33,8 @@ extern pthread_mutex_t mutexWin;
 
 
 void print_help();
-int read_options_client (int argc, char **argv, p_sockin_t em_server, p_sockin_t rc_server, p_sockin_t client);
+int read_options_client (int argc, char **argv, p_sockin_t server_adress, 
+		p_sockin_t pers_sock);
 char* itoa(long n);
 void fn_thread (void *tub);
 

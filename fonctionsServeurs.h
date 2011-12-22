@@ -21,8 +21,6 @@
 #include <pthread.h>
 #include <signal.h>
 
-#include "pers_sock.h"
-
 #define W_GRILLE 7
 #define H_GRILLE 5
 #define FREQ_RAF 1
@@ -34,7 +32,6 @@ extern int arret;
 char* itoa(long n);
 void attachSignals();
 int setNonblocking(int fd);
-int setBlocking(int fd);
 void initGrille();
 
 #endif DEF_FSERV
