@@ -144,7 +144,7 @@ void print_window (win_t *local_win, const char *texte, int posx, int posy){
 
 	x += local_win->_startx;
 	y += local_win->_starty;
-	int xinit = x, yinit = y;
+	int xinit = x;
 	
 	while ((c = *texte++) != '\0') {
 		if (c == '\n') {
@@ -153,7 +153,7 @@ void print_window (win_t *local_win, const char *texte, int posx, int posy){
 			x = xinit;
 		}
 		else {
-			if (x+1 != local_win->_width)
+			if (x+2 != local_win->_width)
 				mvaddch(y, x++, c);
 			else {
 				x = xinit;
