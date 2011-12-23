@@ -29,7 +29,7 @@ void sigpipeHandler (int sig) {
 
 int main(int argc, char **argv) {
 	int grid_size = GRID_H * (GRID_W + 1) + 1;
-	char recvit[grid_size], car;
+	char recvit[grid_size];
 	int nbLus, sd;
 	struct sigaction action;
 	pthread_t thread;
@@ -58,8 +58,9 @@ int main(int argc, char **argv) {
 	bzero(&client,sizeof(client));
 
 	/* Lecture des options */
-	read_options_client(argc, argv, &em_server, &rc_server, &client);
-	
+	ret = read_options_client(argc, argv, &em_server, &rc_server, &client);
+	if (ret)
+		return EXIT_FAILURE;
 	
 	/* Connexion au serveur d'envoi */
 	if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
@@ -88,12 +89,14 @@ int main(int argc, char **argv) {
 	pthread_mutex_init(&mutexWin, NULL);
 	allwin = init_screen();
 
-	sprintf(print, "Adresse IP et port du serveur d'envoi : %s : %d", (char*)inet_ntoa(em_server.sin_addr), htons(em_server.sin_port));
-	print_window(allwin[INFO_WIN], print, 2, 2);
-	sprintf(print, "Adresse IP et port du serveur de reception : %s : %d", (char*)inet_ntoa(rc_server.sin_addr), htons(rc_server.sin_port));
+	sprintf(print, "Adr_IP:port du serveur d'envoi :      %s:%d", (char*)inet_ntoa(em_server.sin_addr), htons(em_server.sin_port));
+	print_window(allwin[INFO_WIN], print, 2, 1);
+	sprintf(print, "Adr_IP:port du serveur de reception : %s:%d", (char*)inet_ntoa(rc_server.sin_addr), htons(rc_server.sin_port));
 	print_window(allwin[INFO_WIN], print, 0, 0);
-	sprintf(print, "Adresse IP du client : %s", (char*)inet_ntoa(client.sin_addr));
+	sprintf(print, "Adr_IP du client :                    %s", (char*)inet_ntoa(client.sin_addr));
 	print_window(allwin[INFO_WIN], print, 0, 0);
+
+	fill_opt_wind(allwin);
 	
 	print_window (allwin[INFO_WIN], "Client connecte.", 0, 0);
 	
@@ -112,7 +115,7 @@ int main(int argc, char **argv) {
 				arret = 1;
 		}
 		pthread_mutex_lock(&mutexWin);
-		print_window (allwin[DISP_WIN], recvit, 2, 2);
+		print_window (allwin[DISP_WIN], recvit, 2, 1);
 		refresh();
 		pthread_mutex_unlock(&mutexWin);
 	}

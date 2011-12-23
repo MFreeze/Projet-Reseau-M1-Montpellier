@@ -11,22 +11,25 @@
 #define DISP_WIN 0
 #define KEYB_WIN 2
 #define INFO_WIN 4
+#define OPTS_WIN 6
 
 #define DISP_WIN_TIT 1
 #define KEYB_WIN_TIT 3
 #define INFO_WIN_TIT 5
+#define OPTS_WIN_TIT 7
 
-#define TOP_MARGIN 3
-#define BOT_MARGIN 3
+#define TOP_MARGIN 2
+#define BOT_MARGIN 2
 #define LEF_MARGIN 3
 #define RIG_MARGIN 3
 #define INT_MARGIN 2
 
-#define TITLE_HEIGHT 3
-#define COMMD_HEIGHT 6
+#define TITLE_HEIGHT  3
+#define COMMD_HEIGHT  6
+#define OPTS_HEIGHT   7
 
 /* Count of windows which will be displayed on the screen */
-#define WIN_NUMB 6
+#define WIN_NUMB 8
 
 typedef struct {
 	int _startx, _starty, _height, _width;
@@ -51,4 +54,6 @@ void init_win (win_t *local_win);
 void clean_ncurse (win_t **win);
 
 void print_window (win_t *local_win, const char *texte, int posx, int posy);
+
+void fill_opt_wind(win_t **);
 #endif

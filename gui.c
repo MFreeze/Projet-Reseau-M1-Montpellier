@@ -70,12 +70,24 @@ win_t **init_screen () {
 
 	/* Display Window Initialization */
 	starty += height;
-	height = LINES - TOP_MARGIN - BOT_MARGIN - INT_MARGIN - TITLE_HEIGHT;
+	height = LINES - TOP_MARGIN - BOT_MARGIN - INT_MARGIN - 2 * TITLE_HEIGHT - OPTS_HEIGHT;
 	create_newwin(allwin[DISP_WIN], height, width, startx,
 			starty, NULL);
 
+	/* Option Window Initialisation */
+	starty += height;
+	height = TITLE_HEIGHT;
+	width = COLS - LEF_MARGIN - RIG_MARGIN;
+	create_newwin(allwin[OPTS_WIN_TIT], height, width,
+			startx, starty, "Options");
+
+	starty += TITLE_HEIGHT;
+	height = OPTS_HEIGHT;
+	create_newwin(allwin[OPTS_WIN], height, width,
+			startx, starty, NULL);
+
 	/* Command Window Title Initialization */
-	starty = TOP_MARGIN; startx += INT_MARGIN + width;
+	starty = TOP_MARGIN; startx += INT_MARGIN + allwin[DISP_WIN]->_width;
 	width = COLS - startx - RIG_MARGIN; height = TITLE_HEIGHT;
 	create_newwin(allwin[KEYB_WIN_TIT], height, width,
 			startx, starty, "Command");
@@ -94,7 +106,7 @@ win_t **init_screen () {
 
 	/* Info Window Initialization */
 	starty += TITLE_HEIGHT;
-	height = LINES - TOP_MARGIN - 2 * TITLE_HEIGHT - INT_MARGIN - BOT_MARGIN - COMMD_HEIGHT;
+	height = LINES - TOP_MARGIN - 3 * TITLE_HEIGHT - INT_MARGIN - BOT_MARGIN - COMMD_HEIGHT - OPTS_HEIGHT;
 	create_newwin(allwin[INFO_WIN], height, width, startx,
 			starty, NULL);
 
@@ -153,5 +165,13 @@ void print_window (win_t *local_win, const char *texte, int posx, int posy){
 
 	local_win->_posx = 2;
 	local_win->_posy = y + 1 - local_win->_starty;
+}
+
+void fill_opt_wind(win_t **allwin) {
+	print_window(allwin[OPTS_WIN], "-h,          afiche l'aide et quitte",2,1);
+	print_window(allwin[OPTS_WIN], "-a serv_adr, specifie l'adresse du serveur",0,0);
+	print_window(allwin[OPTS_WIN], "-n hostname, specifie le nom d'hote du serveur",0,0);
+	print_window(allwin[OPTS_WIN], "-p port,     specifie le port de la composante d'emission du serveur",0,0);
+	print_window(allwin[OPTS_WIN], "-P port,     specifie le port de la composante de reception du serveur",0,0);
 }
 

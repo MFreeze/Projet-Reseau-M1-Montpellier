@@ -35,7 +35,6 @@ void print_help() {
 	printf("\t-n hostname, Retrouve l'adresse IP du serveur à partir de son nom d'hôtes.\n");
 	printf("\t-p emission_server_port, Spécifie le port du serveur d'émission d'image.\n");
 	printf("\t-P recep_server_port, Spécifie le port du serveur de contrôle de la caméra.\n");
-	printf("Arguments :\n");
 }
 
 int read_options_client (int argc, char **argv, p_sockin_t em_server,
@@ -194,7 +193,7 @@ void fn_thread (void *tub) {
 					fprintf(stderr, "Connexion établie!\n");
 					
 					char temp[100];
-					sprintf (temp, "Controle de la camera acquis pour %d sec", atoi(buf));
+					sprintf (temp, "Controle de la camera acquis pour %d sec max", atoi(buf));
 					pthread_mutex_lock(&mutexWin);
 					print_window (allwin[INFO_WIN], temp, 0, 0);
 					refresh();
@@ -262,5 +261,4 @@ void fn_thread (void *tub) {
 	printf("Terminaison du thread\n");
 	pthread_exit(NULL);
 }
-
 
