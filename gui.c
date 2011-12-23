@@ -108,8 +108,7 @@ win_t **init_screen () {
 	/* Info Window Initialization */
 	starty += TITLE_HEIGHT;
 	height = LINES - TOP_MARGIN - 2 * TITLE_HEIGHT - INT_MARGIN - BOT_MARGIN - COMMD_HEIGHT;
-	create_newwin(allwin[INFO_WIN], height, width, startx,
-			starty, NULL);
+	create_newwin(allwin[INFO_WIN], height, width, startx, starty, NULL);
 
 	mvwprintw (allwin[KEYB_WIN]->_wind, 1, 2, "c : demande controle camera");
 	mvwprintw (allwin[KEYB_WIN]->_wind, 2, 2, "q : abandonne controle camera");
@@ -139,33 +138,42 @@ void init_win (win_t *local_win) {
 }
 
 void print_window (win_t *local_win, const char *texte, int posx, int posy){
+	
 	int x = (posx != 0 ? posx : local_win->_posx);
 	int y = (posy != 0 ? posy : local_win->_posy);
-	char c;
+	int i = 0;
 
 	x += local_win->_startx;
 	y += local_win->_starty;
 	int xinit = x;
 	
-	while ((c = *texte++) != '\0') {
-		if (c == '\n') {
-			if (y + 1 != local_win->_height)
+	while (texte[i] != '\0') 
+	{
+		if (texte[i] == '\n') 
+		{
+			if (y + 1 < local_win->_height + local_win->_starty)
 				y++; 
 			x = xinit;
 		}
-		else {
-			if (x+2 != local_win->_width)
-				mvaddch(y, x++, c);
-			else {
+		else 
+		{
+			move(y,x);
+			addch(texte[i]);
+			if (x+1 < local_win->_width + local_win->_startx)
+				x++;
+			else
+			{
+				if (y + 1 < local_win->_height + local_win->_starty)
+					y++;
 				x = xinit;
-				y++;
-				texte--;
 			}
 		}
+		i++;
 	}
 
 	local_win->_posx = 2;
 	local_win->_posy = y + 1 - local_win->_starty;
+	refresh();
 }
 
 void fill_opt_wind(win_t **allwin) {

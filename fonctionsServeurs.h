@@ -23,7 +23,7 @@
 
 #define W_GRILLE 16
 #define H_GRILLE 9
-#define FREQ_RAF 500000
+#define FREQ_RAF 100000
 
 extern char* grille;
 extern int arret;

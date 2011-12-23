@@ -153,6 +153,7 @@ void fn_thread (void *tub) {
 	int c = 0, terminaison, cpt_con, connecte, sd;
 	char buf[3] = {0};
 	char erreur[128];
+	char temp[100];
 	
 	while (1) {
 		c = getch();
@@ -194,7 +195,6 @@ void fn_thread (void *tub) {
 				if (recv (sd, buf, 3*sizeof(char), 0) > 0) {
 					fprintf(stderr, "Connexion établie!\n");
 					
-					char temp[100];
 					sprintf (temp, "Controle de la camera acquis pour moins de %d sec", atoi(buf));
 					pthread_mutex_lock(&mutexWin);
 					print_window (allwin[INFO_WIN], temp, 0, 0);

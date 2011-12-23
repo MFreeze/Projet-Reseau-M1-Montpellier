@@ -136,6 +136,7 @@ int main(int argc, char **argv) {
 			if(nbLus == 0 || (nbLus == -1 && errno != EINTR))
 				arret = 1;
 		}
+		fprintf(stderr, "grille :\n %s\n\n", recvit);
 		pthread_mutex_lock(&mutexWin);
 		print_window (allwin[DISP_WIN], recvit, 2, 1);
 		refresh();
