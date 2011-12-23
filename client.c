@@ -79,9 +79,6 @@ int main(int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 	
-	//printf("Appuyez sur entree pour valider et lancer le GUI...");
-	//scanf("%c", &car);
-	
 	
 	freopen("errlog", "w+", stderr);
 	

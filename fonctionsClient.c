@@ -26,15 +26,17 @@ char* itoa(long n)
 
 void print_help() {
 	printf ("SYNOPSIS :\n");
-	printf ("\tclient [-h] [-a server_address] [-n nameserveur] [-p emission_server_port] [-P recep_server_port]\n");
+	printf ("\tclient [-h] [-a client_address] [-A server_address] [-P emission_server_port] [-S recep_server_port]\n");
 	printf("DESCRIPTION :\n");
 	printf ("\tPermet à un utilisateur de se connecter au serveur et de demander le contrôle de la caméra.\n");
 	printf("OPTIONS :\n");
 	printf("\t-h, Affiche l'aide et quitte.\n");
-	printf("\t-a serveur_address, Définit l'adresse IP du serveur.\n");
-	printf("\t-n hostname, Retrouve l'adresse IP du serveur à partir de son nom d'hôtes.\n");
-	printf("\t-p emission_server_port, Spécifie le port du serveur d'émission d'image.\n");
-	printf("\t-P recep_server_port, Spécifie le port du serveur de contrôle de la caméra.\n");
+	printf("\t-a client_address, Définit l'adresse IP du client.\n");
+	printf("\t-A serveur_address, Définit l'adresse IP du serveur.\n");
+	printf("\t-n hostname, Retrouve l'adresse IP du client à partir de son nom d'hôte.\n");
+	printf("\t-N hostname, Retrouve l'adresse IP du serveur à partir de son nom d'hôte.\n");
+	printf("\t-P emission_server_port, Spécifie le port du serveur d'émission d'image.\n");
+	printf("\t-S recep_server_port, Spécifie le port du serveur de contrôle de la caméra.\n");
 }
 
 int read_options_client (int argc, char **argv, p_sockin_t em_server,
@@ -193,7 +195,7 @@ void fn_thread (void *tub) {
 					fprintf(stderr, "Connexion établie!\n");
 					
 					char temp[100];
-					sprintf (temp, "Controle de la camera acquis pour %d sec max", atoi(buf));
+					sprintf (temp, "Controle de la camera acquis pour moins de %d sec", atoi(buf));
 					pthread_mutex_lock(&mutexWin);
 					print_window (allwin[INFO_WIN], temp, 0, 0);
 					refresh();
