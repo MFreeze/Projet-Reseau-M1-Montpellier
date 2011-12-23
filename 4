@@ -111,70 +111,11 @@ contrôle et le thread de gestion des clients du serveur de contrôle. La libérati
 caméra est représentée par une mise à zéro de la variable globale \verb?cam_moving?, le client quant
 à lui est mis au courant de la fin de sa session par fermeture de sa socket du coté serveur.
 
-La figure \ref{fig2} (p. \pageref{fig2}) est une schématisation possible de l'échange.
-
 \textbf{\underline{Remarque} :} Si la liste est pleine, le client est refusé à la demande de
-connexion à l'aide de \verb?accept? dont la liste d'attente a été initialisée à 1.
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.4]{fig2.png}
-\end{center}
-\caption{Protocole d'échange entre le serveur de controle de la caméra et le client}
-\label{fig2}
-\end{figure}
-
-\subsection{Echanges entre les deux composantes du serveur}
-
-Les échanges entre les deux parties du serveurs sont très limités, ils se résument à un segment de
-mémoire partagée contenant la grille et à l'échange de signaux en cas d'interruption du serveur. 
-Par soucis de rapidité (surtour avec un grand nombre de client), les accès à la grille ne sont pas
-protégés puisque le thread de gestion de client du serveur de contrôle est le seul à y accéder en
-écriture, le sémaphore est donc superflu.
+connexion à l'aide de accept dont la liste d'attente a été initialisée à 1.
 
 \section{Schmas algorithmiques}\label{algo}
 
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.35]{client_prin.png}
-\end{center}
-\caption{Thread principal du client}
-\end{figure}
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.35]{thead_client.png}
-\end{center}
-\caption{Thread de contrôle de caméra du client}
-\end{figure}
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.35]{serv2_thr1.png}
-\end{center}
-\caption{Thread principal du serveur de contrôle de la caméra}
-\end{figure}
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.35]{serv2_thr2.png}
-\end{center}
-\caption{Thread secondaire du serveur de contrôle de la caméra}
-\end{figure}
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.35]{serv1_thr1.png}
-\end{center}
-\caption{Thread principal du serveur d'envoi d'images}
-\end{figure}
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.35]{serv2_thr2.png}
-\end{center}
-\caption{Thread subsidiaire de gestion d'un client du serveur d'envoi d'images}
-\end{figure}
 
 \section{Difficults et solutions}\label{difficultes}
 Lorsqu'un thread secondaire utilise les appels systmes recv ou send en mode connect alors que la socket a t ferme de l'autre c™t, un signal SIGPIPE est mis. Ce signal doit tre intercept par le thread principal sous peine de terminer l'application.

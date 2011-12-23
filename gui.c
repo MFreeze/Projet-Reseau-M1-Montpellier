@@ -77,7 +77,6 @@ win_t **init_screen () {
 	/* Option Window Initialisation */
 	starty += height;
 	height = TITLE_HEIGHT;
-	width = COLS - LEF_MARGIN - RIG_MARGIN;
 	create_newwin(allwin[OPTS_WIN_TIT], height, width,
 			startx, starty, "Options");
 
@@ -106,7 +105,7 @@ win_t **init_screen () {
 
 	/* Info Window Initialization */
 	starty += TITLE_HEIGHT;
-	height = LINES - TOP_MARGIN - 3 * TITLE_HEIGHT - INT_MARGIN - BOT_MARGIN - COMMD_HEIGHT - OPTS_HEIGHT;
+	height = LINES - TOP_MARGIN - 2 * TITLE_HEIGHT - INT_MARGIN - BOT_MARGIN - COMMD_HEIGHT;
 	create_newwin(allwin[INFO_WIN], height, width, startx,
 			starty, NULL);
 
@@ -158,7 +157,7 @@ void print_window (win_t *local_win, const char *texte, int posx, int posy){
 			else {
 				x = xinit;
 				y++;
-				*texte--;
+				texte--;
 			}
 		}
 	}

@@ -1,0 +1,9 @@
+\select@language {french}
+\contentsline {section}{\numberline {1}Mode d'emploi}{2}{section.1}
+\contentsline {section}{\numberline {2}Architecture de l'application}{2}{section.2}
+\contentsline {section}{\numberline {3}Protocoles d'\'echange}{3}{section.3}
+\contentsline {subsection}{\numberline {3.1}Echanges entre le serveur d'envoi d'images et la partie affichage du client}{3}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Echanges entre le serveur de contr\`Ule de la cam\`Era et le client}{3}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Echanges entre les deux composantes du serveur}{4}{subsection.3.3}
+\contentsline {section}{\numberline {4}Sch\'emas algorithmiques}{4}{section.4}
+\contentsline {section}{\numberline {5}Difficult\'es et solutions}{4}{section.5}
