@@ -70,7 +70,7 @@ Les exécutables se quittent en envoyant le signal SIGINT (ctrl-c).
 
 
 \section{Architecture de l'application}\label{archi}
-Commençons par examiner l'architecture du serveur. Notre serveur est divisé en deux processus, les deux étant multi-thread.
+Commençons par examiner l'architecture du serveur. Notre serveur est divisé en deux processus, les deux étant multi-thread. Ainsi, les deux tâches distinctes que sont l'envoi de la grille et la réception des commandes pour le contrôle sont prises en charge par deux processus différents (père/fils). Le fait que chacun des processus soit multi-thread sur permet d'effectuer leurs nombreuses tâches de façon parallèle.
 
 Le processus père est le serveur d'envoi ; il gère le broadcast de la grille. Son thread principal accepte les connexions des clients et crée un thread secondaire par client connecté. Les threads secondaires envoient la grille à leur client respectif.
 
@@ -91,9 +91,11 @@ Le client, quant à lui, est également multi-threads. Son thread principal gère l
 \subsection{Echanges entre le serveur d'envoi d'images et la partie affichage du client}
 
 Le protocole est très simple puisqu'il est à sens unique : on procède simplement à une création de
-sockets et une demande de connexion côté client. Du côté serveur, il y a acceptation de la
-connexion, création du thread et envoi de données. La figure \ref{fig1} (p.\pageref{fig1}) en est
-une schématisation possible.
+sockets et une demande de connexion côté client (primitive connect). Du côté serveur, il y a acceptation de la
+connexion (primitive accept), création d'un thread secondaire et envoi de données. Les données en question (grille) sont envoyées par la primitive send sous forme d'un tableau de caractères. 
+
+À la déconnexion, le client ferme sa socket ce qui induit un retour d'erreur pour le thread du serveur d'envoi. Ce thread se termine donc proprement. La figure \ref{fig1} (p.\pageref{fig1}) est
+une schématisation possible de ces échanges.
 
 \begin{figure}[h]
 \begin{center}
@@ -106,24 +108,28 @@ une schématisation possible.
 \subsection{Echanges entre le serveur de contrôle de la caméra et le client}
 
 Le protocole est un petit peu plus compliqué, en effet une fois la connexion au serveur de contrôle
-de caméra demandée, celle ci est automatiquement acceptée si le nombre de clients déjà connectés est
+de caméra demandée (primitive connect), celle ci est automatiquement acceptée si le nombre de clients déjà connectés est
 inférieur à une constante (20 en l'occurrence). Les sockets correspondant aux clients sont sauvegardées dans une file
 d'attente qui permet de savoir en temps réel le nombre de clients en attente du contrôle de la
 caméra\footnote{Ce nombre permet de calculer le temps maximum de contrôle de la caméra pour le
-client en cours d'utilisation}. Une fois le contrôle libre, le serveur prend la première socket de
+client en cours d'utilisation}. 
+
+Une fois le contrôle libre, le serveur prend la première socket de
 la file et crée un thread qui prend en charge le client. Pour garder le client en attente, une fois
 la connexion effectuée celui ci attends un message de la part du serveur lui servant d'\emph{accusé
-de prise en charge}. Les échanges ayant lieu ensuite sont à sens unique du client détenant le
-contrôle vers le thread de gestion des clients du serveur de contrôle. La libération du contrôle de la
-caméra est représentée par une mise à zéro de la variable globale \verb?cam_moving?, le client quant
+de prise en charge}. Cet accusé correspond au temps maximum accordé au client pour le contrôle. 
+
+Les échanges ayant lieu ensuite sont à sens unique du client détenant le
+contrôle vers le thread de gestion des clients du serveur de contrôle. Le client envoie le caractère 'q' pour quitter ou un caractère correspondant à la direction qu'il désire que la caméra prenne. La libération du contrôle de la
+caméra est représentée par une mise à zéro de la variable globale \verb?cam_moving? côté serveur. Le client quant
 à lui est mis au courant de la fin de sa session par fermeture de sa socket du coté serveur.
 
 La figure \ref{fig2} (p. \pageref{fig2}) est une schématisation possible de l'échange.
 
-\textbf{\underline{Remarque} :} Si la liste est pleine, le client est refusé à la demande de
+\textbf{\underline{Remarque} :} Si la liste d'attente est pleine, le client est refusé à la demande de
 connexion à l'aide de \verb?listen? dont la liste d'attente a été initialisée à 1.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \begin{center}
 \includegraphics[scale=0.6]{fig2.png}
 \end{center}
@@ -140,48 +146,50 @@ protégés puisque le thread de gestion de client du serveur de contrôle est le se
 écriture, le sémaphore est donc superflu.
 
 \section{Schémas algorithmiques}\label{algo}
-Voici les schémas algorithmiques des différentes composantes de notre application.
+Vous trouverez les schémas algorithmiques des différentes composantes de notre application ci-dessous : figures \ref{algo_threadP_sEnvoi} à \ref{algo_threadS_client}.
 
-\begin{figure}[H]
+\begin{figure}[p]
+\begin{center}
+\includegraphics[scale=0.7]{serv1_thr1.png}
+\end{center}
+\caption{Thread principal du serveur d'envoi d'images}
+\label{algo_threadP_sEnvoi}
+\end{figure}
+
+\begin{figure}[p]
+\begin{center}
+\includegraphics[scale=0.7]{serv2_thr2.png}
+\end{center}
+\caption{Thread subsidiaire de gestion d'un client du serveur d'envoi d'images}
+\end{figure}
+
+\begin{figure}[p]
+\begin{center}
+\includegraphics[scale=0.64]{serv2_thr1.png}
+\end{center}
+\caption{Thread principal du serveur de contrôle de la caméra}
+\end{figure}
+
+\begin{figure}[p]
+\begin{center}
+\includegraphics[scale=0.64]{serv2_thr2.png}
+\end{center}
+\caption{Thread secondaire du serveur de contrôle de la caméra}
+\end{figure}
+
+\begin{figure}[p]
 \begin{center}
 \includegraphics[scale=0.7]{client_prin.png}
 \end{center}
 \caption{Thread principal du client}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[p]
 \begin{center}
 \includegraphics[scale=0.7]{thead_client.png}
 \end{center}
 \caption{Thread de contrôle de caméra du client}
-\end{figure}
-
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.7]{serv2_thr1.png}
-\end{center}
-\caption{Thread principal du serveur de contrôle de la caméra}
-\end{figure}
-
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.7]{serv2_thr2.png}
-\end{center}
-\caption{Thread secondaire du serveur de contrôle de la caméra}
-\end{figure}
-
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.7]{serv1_thr1.png}
-\end{center}
-\caption{Thread principal du serveur d'envoi d'images}
-\end{figure}
-
-\begin{figure}[H]
-\begin{center}
-\includegraphics[scale=0.7]{serv2_thr2.png}
-\end{center}
-\caption{Thread subsidiaire de gestion d'un client du serveur d'envoi d'images}
+\label{algo_threadS_client}
 \end{figure}
 
 \section{Difficultés et solutions}\label{difficultes}

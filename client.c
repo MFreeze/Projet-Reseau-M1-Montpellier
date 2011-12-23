@@ -111,11 +111,11 @@ int main(int argc, char **argv) {
 	
 	allwin = init_screen();
 
-	sprintf(print, "Adr_IP:port du serveur d'envoi :      %s:%d", (char*)inet_ntoa(em_server.sin_addr), htons(em_server.sin_port));
+	sprintf(print, "Serveur d'envoi :       %s:%d", (char*)inet_ntoa(em_server.sin_addr), htons(em_server.sin_port));
 	print_window(allwin[INFO_WIN], print, 2, 1);
-	sprintf(print, "Adr_IP:port du serveur de reception : %s:%d", (char*)inet_ntoa(rc_server.sin_addr), htons(rc_server.sin_port));
+	sprintf(print, "Serveur de reception :  %s:%d", (char*)inet_ntoa(rc_server.sin_addr), htons(rc_server.sin_port));
 	print_window(allwin[INFO_WIN], print, 0, 0);
-	sprintf(print, "Adr_IP du client :                    %s", (char*)inet_ntoa(client.sin_addr));
+	sprintf(print, "Client :                %s", (char*)inet_ntoa(client.sin_addr));
 	print_window(allwin[INFO_WIN], print, 0, 0);
 
 	fill_opt_wind(allwin);

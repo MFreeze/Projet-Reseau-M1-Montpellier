@@ -1,4 +1,6 @@
+
 #include "gui.h"
+
 
 void create_newwin(win_t *wind, int height, int width, 
 		int startx, int starty, const char *string) {
@@ -137,8 +139,8 @@ void init_win (win_t *local_win) {
 }
 
 void print_window (win_t *local_win, const char *texte, int posx, int posy){
-	int x = posx != 0 ? posx : local_win->_posx;
-	int y = posy != 0 ? posy : local_win->_posy;
+	int x = (posx != 0 ? posx : local_win->_posx);
+	int y = (posy != 0 ? posy : local_win->_posy);
 	char c;
 
 	x += local_win->_startx;
@@ -167,12 +169,12 @@ void print_window (win_t *local_win, const char *texte, int posx, int posy){
 }
 
 void fill_opt_wind(win_t **allwin) {
-	print_window(allwin[OPTS_WIN], "-h,          affiche l'aide et quitte",2,1);
-	print_window(allwin[OPTS_WIN], "-a cli_adr,  specifie l'adresse du client",0,0);
-	print_window(allwin[OPTS_WIN], "-A serv_adr, specifie l'adresse du serveur",0,0);
-	//print_window(allwin[OPTS_WIN], "-n hostname, specifie le nom d'hote du client",0,0);
-	//print_window(allwin[OPTS_WIN], "-N hostname, specifie le nom d'hote du serveur",0,0);
-	print_window(allwin[OPTS_WIN], "-P port,     specifie le port de la composante d'emission du serveur",0,0);
-	print_window(allwin[OPTS_WIN], "-S port,     specifie le port de la composante de reception du serveur",0,0);
+	print_window(allwin[OPTS_WIN], "-h          affiche l'aide et quitte",2,1);
+	print_window(allwin[OPTS_WIN], "-a cli_adr  specifie l'adresse du client",0,0);
+	print_window(allwin[OPTS_WIN], "-A serv_adr specifie l'adresse du serveur",0,0);
+	//print_window(allwin[OPTS_WIN], "-n hostname specifie le nom d'hote du client",0,0);
+	//print_window(allwin[OPTS_WIN], "-N hostname specifie le nom d'hote du serveur",0,0);
+	print_window(allwin[OPTS_WIN], "-P port     specifie le port du serveur d'emission",0,0);
+	print_window(allwin[OPTS_WIN], "-S port     specifie le port du serveur de reception",0,0);
 }
 
