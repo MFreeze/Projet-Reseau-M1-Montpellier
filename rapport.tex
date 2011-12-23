@@ -34,8 +34,8 @@ Guillerme DUVILLIE
 
 \setlength{\parindent}{1 cm}
 \pagenumbering{arabic}
-\newpage
 
+~\\
 
 \section{Mode d'emploi}\label{manuel}
 Tout d'abord, notre application nécessite l'installation de la bibliothèque \href{http://ftp.gnu.org/pub/gnu/ncurses/}{Ncurses} qui gère l'interface console. Il suffit ensuite de compiler grâce au Makefile.
@@ -63,7 +63,11 @@ L'exécutable du client se nomme "client" et accepte les paramètres suivants :
 \item -h affichage de l'aide
 \end{itemize}
 
-Une fois le client lancé, appuyer sur la touche 'entrée' lancera l'interface console. La demande de contrôle de la caméra s'effectue en pressant la touche 'c'. On peut relâcher le contrôle prématurément en appuyant sur 'q'. La direction est donnée à la caméra grâce aux touches directionnelles.
+Par conséquent, pour lancer l'application en local, il suffit d'appeler les exécutables du serveur et du client sans paramètres. Voici un exemple de ligne de commande pour lancer l'application en réseau :\\
+\$ serveur -a 192.168.1.131\\
+\$ client -a 192.168.1.96 -A 192.168.1.13
+
+Une fois le client lancé, la demande de contrôle de la caméra s'effectue en pressant la touche 'c'. On peut relâcher le contrôle prématurément en appuyant sur 'q'. La direction est donnée à la caméra grâce aux touches directionnelles.
 
 Les exécutables se quittent en envoyant le signal SIGINT (ctrl-c).
 
