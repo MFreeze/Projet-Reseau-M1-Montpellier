@@ -1,8 +1,0 @@
-\BOOKMARK [1][-]{section.1}{Mode d'emploi}{}% 1
-\BOOKMARK [1][-]{section.2}{Architecture de l'application}{}% 2
-\BOOKMARK [1][-]{section.3}{Protocoles d'\351change}{}% 3
-\BOOKMARK [2][-]{subsection.3.1}{Echanges entre le serveur d'envoi d'images et la partie affichage du client}{section.3}% 4
-\BOOKMARK [2][-]{subsection.3.2}{Echanges entre le serveur de contr\331le de la cam\310ra et le client}{section.3}% 5
-\BOOKMARK [2][-]{subsection.3.3}{Echanges entre les deux composantes du serveur}{section.3}% 6
-\BOOKMARK [1][-]{section.4}{Sch\351mas algorithmiques}{}% 7
-\BOOKMARK [1][-]{section.5}{Difficult\351s et solutions}{}% 8

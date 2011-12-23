@@ -27,6 +27,25 @@ void sigpipeHandler (int sig) {
 }
 
 
+
+/*void get_new_winsize(int signal_number)
+{
+	int width;
+	int height;
+	
+	getmaxyx(stdscr, height, width);
+	//width = tgetnum("co");
+	//height = tgetnum("li");
+	if (width != -1 && height != -1)
+	{
+		//fprintf(stderr, "%d %d\n", width, height);
+		//wresize((*allwin)->_wind, height, width);
+		//endwin();
+		//wrefresh((*allwin)->_wind);
+	}
+}*/
+
+
 int main(int argc, char **argv) {
 	int grid_size = GRID_H * (GRID_W + 1) + 1;
 	char recvit[grid_size];
@@ -84,6 +103,12 @@ int main(int argc, char **argv) {
 	
 	/* Déclaration des variables de NCurse */
 	pthread_mutex_init(&mutexWin, NULL);
+	
+	/*action.sa_handler = get_new_winsize;
+	if (sigaction(SIGWINCH,&action,NULL)){
+		perror ("sigaction");
+	}*/
+	
 	allwin = init_screen();
 
 	sprintf(print, "Adr_IP:port du serveur d'envoi :      %s:%d", (char*)inet_ntoa(em_server.sin_addr), htons(em_server.sin_port));

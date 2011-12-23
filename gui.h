@@ -7,6 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <term.h>
 
 #define DISP_WIN 0
 #define KEYB_WIN 2
@@ -56,4 +57,5 @@ void clean_ncurse (win_t **win);
 void print_window (win_t *local_win, const char *texte, int posx, int posy);
 
 void fill_opt_wind(win_t **);
+
 #endif

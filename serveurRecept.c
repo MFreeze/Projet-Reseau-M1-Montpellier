@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 	int addr_in_size = sizeof(struct sockaddr_in);
 	int i = 1;
 	int sd_client;
-	pthread_t thread_id = -1;
+	pthread_t thread_id = (pthread_t)-1;
 	int *socketClients_trans = NULL;
 	struct sockaddr_in* client;
 	int sd, joined;
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
 				usleep(10000);
 			}
 		}
-		if(camMoving == 0 && thread_id != -1 && !joined)
+		if(camMoving == 0 && thread_id != (pthread_t)-1 && !joined)
 		{
 			pthread_join(thread_id, NULL);
 			joined = 1;

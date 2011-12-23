@@ -27,10 +27,7 @@ Guillerme DUVILLIE
 {\centering \Huge \bfseries Projet de rseau \par}
 \vfill
 23 dcembre 2011 \hfill UM2
-
 \newpage
-\tableofcontents
-\thispagestyle{empty}
 
 \setlength{\parindent}{1 cm}
 \pagenumbering{arabic}
@@ -82,106 +79,117 @@ Le processus fils est le serveur de rception ; il traite les demandes de dplac
 
 Le client, quant ˆ lui, est galement multi-threads. Son thread principal gre la rception et l'affichage de la grille. Tandis que son thread secondaire gre les entres clavier et envoi les demandes de contr™le de la camra au serveur de rception.
 
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=1]{schema_global.png}
+\end{center}
+\caption{Schma global dcrivant l'architecture de l'application}
+\end{figure}
 
 \section{Protocoles d'change}\label{protocoles}
 
 \subsection{Echanges entre le serveur d'envoi d'images et la partie affichage du client}
 
-Le protocole est très simple puisqu'il est à sens unique : on procède simplement à une création de
-sockets et une demande de connexion côté client. Du côté serveur, il y a acceptation de la
-connexion, création du thread et envoi de données. La figure \ref{fig1} (p.\pageref{fig1}) en est
-une schématisation possible.
+Le protocole est trs simple puisqu'il est ˆ sens unique : on procde simplement ˆ une cration de
+sockets et une demande de connexion c™t client. Du c™t serveur, il y a acceptation de la
+connexion, cration du thread et envoi de donnes. La figure \ref{fig1} (p.\pageref{fig1}) en est
+une schmatisation possible.
 
-\begin{figure}
+\begin{figure}[h]
 \begin{center}
-\includegraphics[scale=0.4]{fig1.png}
+\includegraphics[scale=0.7]{fig1.png}
 \end{center}
-\caption{Protocole d'échange entre le serveur d'émission d'images et le client}
+\caption{Protocole d'change entre le serveur d'mission d'images et le client}
 \label{fig1}
 \end{figure}
 
-\subsection{Echanges entre le serveur de contrôle de la caméra et le client}
+\subsection{Echanges entre le serveur de contr™le de la camra et le client}
 
-Le protocole est un petit peu plus compliqué, en effet une fois la connexion au serveur de contrôle
-de caméra demandée, celle ci est automatiquement acceptée si le nombre de clients déjà connectés est
-inférieur à une constante. Les sockets correspondant au client sont sauvegardées dans une file
-d'attente qui permet de savoir en temps réel le nombre de clients en attente du contrôle de la
-caméra\footnote{Ce nombre permet de calculer le temps maximum de contrôle de la caméra pour le
-client en cours d'utilisation}. Une fois le contrôle libre, le serveur prend la première socket de
-la file et crée un thread qui prend en charge le client. Pour garder le client en attente, une fois
-la connexion effectuée celui ci attends un message de la part du serveur lui servant d'\emph{accusé
-de prise en charge}. Les échanges ayant lieu ensuite sont à sens uniques du client détenant le
-contrôle et le thread de gestion des clients du serveur de contrôle. La libération du contrôle de la
-caméra est représentée par une mise à zéro de la variable globale \verb?cam_moving?, le client quant
-à lui est mis au courant de la fin de sa session par fermeture de sa socket du coté serveur.
+Le protocole est un petit peu plus compliqu, en effet une fois la connexion au serveur de contr™le
+de camra demande, celle ci est automatiquement accepte si le nombre de clients djˆ connects est
+infrieur ˆ une constante (20 en l'occurrence). Les sockets correspondant aux clients sont sauvegardes dans une file
+d'attente qui permet de savoir en temps rel le nombre de clients en attente du contr™le de la
+camra\footnote{Ce nombre permet de calculer le temps maximum de contr™le de la camra pour le
+client en cours d'utilisation}. Une fois le contr™le libre, le serveur prend la premire socket de
+la file et cre un thread qui prend en charge le client. Pour garder le client en attente, une fois
+la connexion effectue celui ci attends un message de la part du serveur lui servant d'\emph{accus
+de prise en charge}. Les changes ayant lieu ensuite sont ˆ sens unique du client dtenant le
+contr™le vers le thread de gestion des clients du serveur de contr™le. La libration du contr™le de la
+camra est reprsente par une mise ˆ zro de la variable globale \verb?cam_moving?, le client quant
+ˆ lui est mis au courant de la fin de sa session par fermeture de sa socket du cot serveur.
 
-La figure \ref{fig2} (p. \pageref{fig2}) est une schématisation possible de l'échange.
+La figure \ref{fig2} (p. \pageref{fig2}) est une schmatisation possible de l'change.
 
-\textbf{\underline{Remarque} :} Si la liste est pleine, le client est refusé à la demande de
-connexion à l'aide de \verb?accept? dont la liste d'attente a été initialisée à 1.
+\textbf{\underline{Remarque} :} Si la liste est pleine, le client est refus ˆ la demande de
+connexion ˆ l'aide de \verb?listen? dont la liste d'attente a t initialise ˆ 1.
 
-\begin{figure}
+\begin{figure}[h]
 \begin{center}
-\includegraphics[scale=0.4]{fig2.png}
+\includegraphics[scale=0.6]{fig2.png}
 \end{center}
-\caption{Protocole d'échange entre le serveur de controle de la caméra et le client}
+\caption{Protocole d'change entre le serveur de controle de la camra et le client}
 \label{fig2}
 \end{figure}
 
 \subsection{Echanges entre les deux composantes du serveur}
 
-Les échanges entre les deux parties du serveurs sont très limités, ils se résument à un segment de
-mémoire partagée contenant la grille et à l'échange de signaux en cas d'interruption du serveur. 
-Par soucis de rapidité (surtour avec un grand nombre de client), les accès à la grille ne sont pas
-protégés puisque le thread de gestion de client du serveur de contrôle est le seul à y accéder en
-écriture, le sémaphore est donc superflu.
+Les changes entre les deux parties du serveurs sont trs limits, ils se rsument ˆ un segment de
+mmoire partage contenant la grille et ˆ l'change de signaux en cas d'interruption du serveur. 
+Par soucis de rapidit (surtout avec un grand nombre de client), les accs ˆ la grille ne sont pas
+protgs puisque le thread de gestion de client du serveur de contr™le est le seul ˆ y accder en
+criture, le smaphore est donc superflu.
 
 \section{Schmas algorithmiques}\label{algo}
+Voici les schmas algorithmiques des diffrentes composantes de notre application.
 
-\begin{figure}
+\begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.35]{client_prin.png}
+\includegraphics[scale=0.7]{client_prin.png}
 \end{center}
 \caption{Thread principal du client}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.35]{thead_client.png}
+\includegraphics[scale=0.7]{thead_client.png}
 \end{center}
-\caption{Thread de contrôle de caméra du client}
+\caption{Thread de contr™le de camra du client}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.35]{serv2_thr1.png}
+\includegraphics[scale=0.7]{serv2_thr1.png}
 \end{center}
-\caption{Thread principal du serveur de contrôle de la caméra}
+\caption{Thread principal du serveur de contr™le de la camra}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.35]{serv2_thr2.png}
+\includegraphics[scale=0.7]{serv2_thr2.png}
 \end{center}
-\caption{Thread secondaire du serveur de contrôle de la caméra}
+\caption{Thread secondaire du serveur de contr™le de la camra}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.35]{serv1_thr1.png}
+\includegraphics[scale=0.7]{serv1_thr1.png}
 \end{center}
 \caption{Thread principal du serveur d'envoi d'images}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 \begin{center}
-\includegraphics[scale=0.35]{serv2_thr2.png}
+\includegraphics[scale=0.7]{serv2_thr2.png}
 \end{center}
 \caption{Thread subsidiaire de gestion d'un client du serveur d'envoi d'images}
 \end{figure}
 
 \section{Difficults et solutions}\label{difficultes}
+Nous avons t confronts ˆ quelques problmes lors de la mise en Ïuvre de notre application. Les principaux sont dtaills ci-dessous.
+
 Lorsqu'un thread secondaire utilise les appels systmes recv ou send en mode connect alors que la socket a t ferme de l'autre c™t, un signal SIGPIPE est mis. Ce signal doit tre intercept par le thread principal sous peine de terminer l'application.
+
+L'interface console Ncurses supporte normalement le redimensionnement de la fentre de terminal. Cependant, nous n'avons pas trouv le temps ncessaire pour prendre en charge le redimensionnement de la fentre dans laquelle est lanc le client.
 
 \vfill
 {\raggedleft Ralis avec \LaTeX{} \par}
