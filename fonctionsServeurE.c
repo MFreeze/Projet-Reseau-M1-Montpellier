@@ -159,7 +159,7 @@ void* thread_broadcast(void* arg)
 		}
 		else
 		{
-			sleep(FREQ_RAF);
+			usleep(FREQ_RAF);
 		}
 	}
 	

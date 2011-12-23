@@ -3,8 +3,8 @@
 #include "fonctionsClient.h"
 
 
-#define GRID_W 48
-#define GRID_H 32
+#define GRID_W 16
+#define GRID_H 9
 
 struct buff {
 	int _fd_in;
@@ -50,6 +50,7 @@ int main(int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 	
+	
 	/* Initialisation des structures reseau */
 	bzero(&em_server,sizeof(em_server));
 	bzero(&rc_server,sizeof(rc_server));
@@ -58,33 +59,33 @@ int main(int argc, char **argv) {
 	/* Lecture des options */
 	read_options_client(argc, argv, &em_server, &rc_server, &client);
 	
-	/* Connexion au serveur */
-	if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-		perror ("socket");
-		return -1;
-	}
-	if (bind(sd, (struct sockaddr *) &client, sizeof(struct sockaddr_in)) < 0) {
-		perror ("bind");
-		close (sd);
-		return -1;
-	}
-	
-	if(connect(sd, (struct sockaddr*)&em_server, sizeof(em_server)) == -1) {
-		perror("Erreur de connection ");
-		if(close(sd) == -1){perror("Erreur de close");}
-		exit(EXIT_FAILURE);
-	}
-	
-	freopen("errlog", "w+", stderr);
-	
 	
 	printf("\nAdresse IP du serveur d'envoi : %s\nPort du serveur d'envoi : %d\n\n", (char*)inet_ntoa(em_server.sin_addr), htons(em_server.sin_port));
 	printf("Adresse IP du serveur de reception : %s\nPort du serveur de reception : %d\n\n", (char*)inet_ntoa(rc_server.sin_addr), htons(rc_server.sin_port));
 	printf("Adresse IP du client : %s\n\n", (char*)inet_ntoa(client.sin_addr));
 	
+	/* Connexion au serveur d'envoi */
+	if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+		perror ("Erreur a la creation de la socket de visualisation ");
+		return -1;
+	}
+	if (bind(sd, (struct sockaddr *) &client, sizeof(struct sockaddr_in)) < 0) {
+		perror ("Erreur au bind de la socket de visualisation ");
+		close (sd);
+		return -1;
+	}
+	
+	if(connect(sd, (struct sockaddr*)&em_server, sizeof(em_server)) == -1) {
+		perror("Erreur a la connection de la socket de visualisation ");
+		if(close(sd) == -1){perror("Erreur de close");}
+		exit(EXIT_FAILURE);
+	}
 	
 	printf("Appuyez sur entree pour valider et lancer le GUI...");
 	scanf("%c", &car);
+	
+	
+	freopen("errlog", "w+", stderr);
 	
 	/* Déclaration des variables de NCurse */
 	pthread_mutex_init(&mutexWin, NULL);

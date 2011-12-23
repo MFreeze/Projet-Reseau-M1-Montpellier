@@ -88,6 +88,11 @@ void* thread_deplacement(void* arg)
 		}
 		else
 		{
+			if(strchr(buffer, 'q') != NULL)
+			{
+				tourne = 0;
+				continue;
+			}
 			if(strchr(buffer, 'r') != NULL)
 			{
 				if(xPoint < W_GRILLE-1)
@@ -133,6 +138,7 @@ void* thread_deplacement(void* arg)
 	}
 	
 	printf("Le client sur la socket %d perd la controle de la camera.\n", sd_client);
+	
 	pthread_mutex_lock(&mutexSockets);
 	for(i = 0 ; i < nbClients-1 ; i++)
 	{
@@ -154,9 +160,8 @@ void* thread_deplacement(void* arg)
 		}
 		printf("\n");
 	}
-	
-	
 	pthread_mutex_unlock(&mutexSockets);
+	
 	camMoving = 0;
 	
 	pthread_exit(NULL);

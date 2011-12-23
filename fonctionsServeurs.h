@@ -21,9 +21,9 @@
 #include <pthread.h>
 #include <signal.h>
 
-#define W_GRILLE 7
-#define H_GRILLE 5
-#define FREQ_RAF 1
+#define W_GRILLE 16
+#define H_GRILLE 9
+#define FREQ_RAF 500000
 
 extern char* grille;
 extern int arret;

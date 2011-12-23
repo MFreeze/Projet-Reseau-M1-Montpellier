@@ -243,7 +243,11 @@ void fn_thread (void *tub) {
 							c = getch();
 					}
 					if(c == 'q')
+					{
+						buf[0] = 'q';
+						send (sd, buf, 3*sizeof(char), 0);
 						close(sd);
+					}
 					
 					pthread_mutex_lock(&mutexWin);
 					print_window(allwin[INFO_WIN], "Deconnecte du controle de camera", 0, 0);
