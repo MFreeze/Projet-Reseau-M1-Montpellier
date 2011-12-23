@@ -193,8 +193,10 @@ void fn_thread (void *tub) {
 				if (recv (sd, buf, 3*sizeof(char), 0) > 0) {
 					fprintf(stderr, "Connexion établie!\n");
 					
+					char temp[100];
+					sprintf (temp, "Controle de la camera acquis pour %d sec", atoi(buf));
 					pthread_mutex_lock(&mutexWin);
-					print_window (allwin[INFO_WIN], "Controle de la camera acquis", 0, 0);
+					print_window (allwin[INFO_WIN], temp, 0, 0);
 					refresh();
 					pthread_mutex_unlock(&mutexWin);
 					

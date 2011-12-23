@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 			
 			/* lancement de l'execution du thread qui s'occupera du client */
 			pthread_mutex_lock(&mutexSockets);
-			if(pthread_create(&thread_id, NULL, thread_deplacement, NULL) != 0)
+			if(pthread_create(&thread_id, NULL, thread_deplacement, (void *)timeControl) != 0)
 			{
 				fprintf(stderr, "Thread creation failure.\n");
 				arret = 1;

@@ -52,6 +52,7 @@ win_t **init_screen () {
 		allwin[i] = (win_t *) malloc (size_struct);
 
 	initscr();
+	clear();
 	cbreak();
 	noecho();
 	keypad(stdscr, TRUE);
@@ -63,7 +64,7 @@ win_t **init_screen () {
 
 	/* Display Window Title Intialization */
 	starty = TOP_MARGIN; startx = LEF_MARGIN;
-	height = TITLE_HEIGHT; width = COLS * 2 / 3;
+	height = TITLE_HEIGHT; width = COLS * 1 / 2;
 	create_newwin (allwin[DISP_WIN_TIT], height, width,
 			startx, starty, "Display");
 
@@ -97,7 +98,10 @@ win_t **init_screen () {
 	create_newwin(allwin[INFO_WIN], height, width, startx,
 			starty, NULL);
 
-	mvwprintw (allwin[KEYB_WIN]->_wind, 1, 2, "Input : ");
+	mvwprintw (allwin[KEYB_WIN]->_wind, 1, 2, "c : demande controle camera");
+	mvwprintw (allwin[KEYB_WIN]->_wind, 2, 2, "q : abandonne controle camera");
+	mvwprintw (allwin[KEYB_WIN]->_wind, 3, 2, "ctrl+c : quitte");
+	mvwprintw (allwin[KEYB_WIN]->_wind, 4, 2, "fleches : deplace camera");
 
 	for (i=0; i<WIN_NUMB; i++)
 		wrefresh(allwin[i]->_wind);

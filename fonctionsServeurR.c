@@ -41,6 +41,7 @@ void* thread_deplacement(void* arg)
 	int sd_client = socketClients[0];
 	pthread_mutex_unlock(&mutexSockets);
 	char buffer[3];
+	int tps = (int)arg;
 	
 
 	printf("Le client sur la socket %d prend la controle de la camera.\n", sd_client);
@@ -55,7 +56,7 @@ void* thread_deplacement(void* arg)
 		}
 	}
 	
-	sprintf(buffer, "%d", 1);
+	sprintf(buffer, "%d", tps);
 	
 	/* signification de la connection au client */
 	if(send(sd_client, buffer, 3*sizeof(char), 0) == -1)

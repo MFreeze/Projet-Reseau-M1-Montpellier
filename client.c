@@ -34,6 +34,7 @@ int main(int argc, char **argv) {
 	struct sigaction action;
 	pthread_t thread;
 	int ret;
+	char print[200];
 	
 
 	/* Gestion des signaux */
@@ -60,10 +61,6 @@ int main(int argc, char **argv) {
 	read_options_client(argc, argv, &em_server, &rc_server, &client);
 	
 	
-	printf("\nAdresse IP du serveur d'envoi : %s\nPort du serveur d'envoi : %d\n\n", (char*)inet_ntoa(em_server.sin_addr), htons(em_server.sin_port));
-	printf("Adresse IP du serveur de reception : %s\nPort du serveur de reception : %d\n\n", (char*)inet_ntoa(rc_server.sin_addr), htons(rc_server.sin_port));
-	printf("Adresse IP du client : %s\n\n", (char*)inet_ntoa(client.sin_addr));
-	
 	/* Connexion au serveur d'envoi */
 	if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		perror ("Erreur a la creation de la socket de visualisation ");
@@ -81,8 +78,8 @@ int main(int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 	
-	printf("Appuyez sur entree pour valider et lancer le GUI...");
-	scanf("%c", &car);
+	//printf("Appuyez sur entree pour valider et lancer le GUI...");
+	//scanf("%c", &car);
 	
 	
 	freopen("errlog", "w+", stderr);
@@ -90,6 +87,13 @@ int main(int argc, char **argv) {
 	/* Déclaration des variables de NCurse */
 	pthread_mutex_init(&mutexWin, NULL);
 	allwin = init_screen();
+
+	sprintf(print, "Adresse IP et port du serveur d'envoi : %s : %d", (char*)inet_ntoa(em_server.sin_addr), htons(em_server.sin_port));
+	print_window(allwin[INFO_WIN], print, 2, 2);
+	sprintf(print, "Adresse IP et port du serveur de reception : %s : %d", (char*)inet_ntoa(rc_server.sin_addr), htons(rc_server.sin_port));
+	print_window(allwin[INFO_WIN], print, 0, 0);
+	sprintf(print, "Adresse IP du client : %s", (char*)inet_ntoa(client.sin_addr));
+	print_window(allwin[INFO_WIN], print, 0, 0);
 	
 	print_window (allwin[INFO_WIN], "Client connecte.", 0, 0);
 	
