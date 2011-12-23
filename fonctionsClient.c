@@ -25,14 +25,17 @@ char* itoa(long n)
 }
 
 void print_help() {
+	printf ("SYNOPSIS :\n");
+	printf ("\tclient [-h] [-a server_address] [-n nameserveur] [-p emission_server_port] [-P recep_server_port]\n");
+	printf("DESCRIPTION :\n");
+	printf ("\tPermet à un utilisateur de se connecter au serveur et de demander le contrôle de la caméra.\n");
+	printf("OPTIONS :\n");
+	printf("\t-h, Affiche l'aide et quitte.\n");
+	printf("\t-a serveur_address, Définit l'adresse IP du serveur.\n");
+	printf("\t-n hostname, Retrouve l'adresse IP du serveur à partir de son nom d'hôtes.\n");
+	printf("\t-p emission_server_port, Spécifie le port du serveur d'émission d'image.\n");
+	printf("\t-P recep_server_port, Spécifie le port du serveur de contrôle de la caméra.\n");
 	printf("Arguments :\n");
-	printf("-n nom de l'hote /* par default 'localhost'*/\n");
-	printf("-N nom de l'hote du serveur /* par default 'localhost'*/\n");
-	printf("-a adresse ip de l'hote /* par default '127.0.0.1'*/\n");
-	printf("-A adresse ip du serveur /* par default '127.0.0.1'*/\n");
-	printf("-P numero de port qu'utilise le serveur d'envoi /* par default '13321'*/\n");
-	printf("-S numero de port qu'utilise le serveur de reception /* par default '13322'*/\n\n");
-	exit(EXIT_SUCCESS);
 }
 
 int read_options_client (int argc, char **argv, p_sockin_t em_server,
